@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+{% block title %} Dashboard {% endblock %}
+<!-- Element injected in the BODY element -->
+{% block body_class %} sidebar-mini {% endblock body_class %}
+<!-- Specific Page CSS goes HERE -->
+{% block stylesheets %}
+<!-- Google Font: Source Sans Pro -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="/static/assets/plugins/fontawesome-free/css/all.min.css">
+<!-- Ionicons -->
+<link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="/static/assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+<!-- iCheck -->
+<link rel="stylesheet" href="/static/assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<!-- JQVMap -->
+<link rel="stylesheet" href="/static/assets/plugins/jqvmap/jqvmap.min.css">
+<!-- Theme style -->
+<link rel="stylesheet" href="/static/assets/css/adminlte.min.css">
+<!-- overlayScrollbars -->
+<link rel="stylesheet" href="/static/assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+<!-- Daterange picker -->
+<link rel="stylesheet" href="/static/assets/plugins/daterangepicker/daterangepicker.css">
+<!-- summernote -->
+<link rel="stylesheet" href="/static/assets/plugins/summernote/summernote-bs4.min.css">
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="content-wrapper" style="background-color: #E4E0E1;">
+  <!--Start Page Header-->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+      </div>
+    </div>
+  </div>
+  <!--End Page Header-->
+  <style>
+    /* Custom width for the section */
+    .custom-width-40 {
+      width: 40%;
+      margin-left: 10px;
+    }
+    .custom-width-60 {
+      width: 57%;
+      margin-left: 20px;
+    }
+    @media (max-width: 768px) {
+    .custom-width-40, .custom-width-60 {
+      width: 100%; /* Adjust to 90% width on mobile */
+      margin-left: 0; /* Remove left margin on mobile */
+    }
+  }
+    /* Center the section if needed */
+  </style>
+  <!--Start Main content -->
+  <section class="content">
+    <h3 style="padding-left: 1%;">Phase 3: Recipes</h3>
+    <div class="container-fluid">
+      <div class="row">
+        <!--Start Left Side-->
+        <section class="custom-width-40">
+          <div class="card" style="background-color: #D6C0B3; border: 2px solid #000000;">
+            <!--Start Header-->
+            <!--End Header-->
+
+            <!--Start Card Body-->
+            <div class="card-body">
+              <h3>Recommended Recipe:</h3>
+              <ul id="recipe-list" class="list-group">
+                {% for dish in dishes %}
+                  <li class="list-group-item recipe-item" data-recipe="{{ loop.index0 }}">{{ dish.dish_name }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+            <!--End Card Body-->
+          </div>
+          <div class="card" style="background-color: #D6C0B3; border: 2px solid #000000;">
+            <!--Start Header-->
+
+            <!--End Header-->
+        
+            <!--Start Card Body-->
+            <div class="card-body">
+              <h3>You may also try:</h3>
+              <ul id="additional-recipe-list" class="list-group">
+                {% for additional_dish in matching_dishes %}
+                {% if additional_dish.dish_name not in dishes|map(attribute='dish_name') %}
+                  <li class="list-group-item recipe-item" data-recipe="{{ loop.index0 }}">{{ additional_dish.dish_name }}</li>
+                {% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+            <!--End Card Body-->
+          </div>
+        </section>
+        <!--End Left Side-->
+        <!--Start Right Side-->
+        <section class="custom-width-60">
+          <div class="card" style="background-color: #D6C0B3; border: 2px solid #000000;">
+            <!--Start Header-->
+
+
+            <!--End Header-->
+
+            <!--Start Card Body-->
+            <div class="card-body">
+              <h3>Ingredients and Procedure:</h3>
+              <div id="recipe-details" class="recipe-details"></div>
+            </div>
+            <!--End Card Body-->
+          </div>
+        </section>
+        <!--End Right Side-->
+
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE -->
+{% block javascripts %}
+<!-- jQuery -->
+<script src="/static/assets/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/static/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/static/assets/plugins/jquery/jquery.min.js"></script>
+<script src="/static/assets/plugins/jquery-ui/jquery-ui.min.js"></script>
+<script src="/static/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/static/assets/plugins/chart.js/Chart.min.js"></script>
+<script src="/static/assets/plugins/sparklines/sparkline.js"></script>
+<script src="/static/assets/plugins/jqvmap/jquery.vmap.min.js"></script>
+<script src="/static/assets/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+<script src="/static/assets/plugins/jquery-knob/jquery.knob.min.js"></script>
+<script src="/static/assets/plugins/moment/moment.min.js"></script>
+<script src="/static/assets/plugins/daterangepicker/daterangepicker.js"></script>
+<script src="/static/assets/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<script src="/static/assets/plugins/summernote/summernote-bs4.min.js"></script>
+<script src="/static/assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<script src="/static/assets/js/adminlte.js"></script>
+<script src="/static/assets/js/pages/dashboard.js"></script>
+<script src="/static/assets/js/demo.js"></script>
+<script>
+const recipes = {{ dishes|tojson }};
+const additionalRecipes = {{ matching_dishes|tojson }};
+const enteredIngredients = {{ ingredients|tojson }};
+const isMobile = window.innerWidth <= 768;
+// Handle recipe list click for 'Pick a Recipe'
+document.querySelectorAll('.recipe-item').forEach(item => {
+item.addEventListener('click', function() {
+    const recipeIndex = this.getAttribute('data-recipe');
+    const recipe = recipes[recipeIndex] || additionalRecipes[recipeIndex];
+
+    // Function to process and style ingredients
+    const processIngredients = (ingredientCategory, label) => {
+        const processedIngredients = recipe.ingredients[ingredientCategory].map(ing => {
+            const measurement = `<span style="color:black">${ing.measurement}</span>`;
+            const ingredientNames = ing.name.split(/\s+and\s+/); // Split by "and"
+            const coloredIngredients = ingredientNames.map(ingredientName => {
+                const ingredientNameLower = ingredientName.toLowerCase(); // Case-insensitive
+                const color = enteredIngredients.some(ing => ingredientNameLower.includes(ing)) ? 'green' : 'red';
+                return `<span style="color:${color}">${ingredientName}</span>`;
+            }).join(' and '); // Join back with "and" if needed
+            return `<li>${measurement} ${coloredIngredients}</li>`;
+        }).join('');
+
+        return `<h6>${label}:</h6><ul>${processedIngredients}</ul>`;
+    };
+
+    // Generate ingredient lists for each category
+    const mainIngredients = processIngredients('main', 'Main Ingredients');
+    const secondaryIngredients = processIngredients('secondary', 'Secondary Ingredients');
+    const commonIngredients = processIngredients('common', 'Common Ingredients');
+
+    // Combine all ingredient sections
+    const ingredientList = `${mainIngredients}${secondaryIngredients}${commonIngredients}`;
+    // Recipe details with categorized ingredients
+    const recipeDetails = `
+    <h4>${recipe.dish_name}</h4>
+    <div style="display: flex; justify-content: center;">
+        <img src="${recipe.image}" alt="${recipe.dish_name}" 
+            style="width: ${isMobile ? '100%' : '50%'}; 
+                    height: ${isMobile ? '100%' : '50%'}; 
+                    margin-bottom: 15px;">
+    </div>
+    <p><strong>Author:</strong> ${recipe.author}</p>
+    <p><strong>Serving:</strong> ${recipe.serving}</p>
+    <p><strong>Cooking Time:</strong> ${recipe.cook_time} minutes</p>
+    <p><strong>Link:</strong> <a href="${recipe.link}" target="_blank">${recipe.link}</a></p>
+    
+    <h5>Ingredients:</h5>
+    ${ingredientList}
+
+    <h5>Procedure:</h5>
+    <p>${recipe.instructions.join('<br>')}</p>
+
+    <!-- Form for submitting the selected dish (handled via JavaScript) -->
+    <form id="historyForm">
+        <input type="hidden" name="user_id" value="{{ current_user_id }}">
+        <input type="hidden" name="dish_name" value = "${recipe.dish_name} " >
+        <input type="hidden" name="date" value="{{ currentDate }}">
+        <input type="hidden" name="ingredients" id="greenIngredients">
+        
+        <button type="button" class="btn btn-primary mt-2 custom-btn-responsive" onclick="submitHistory()">
+            Try This Dish
+        </button>
+    </form>
+
+    <p id="successMessage" style="color: green; display: none;">Dish added to history!</p>
+`;
+    document.getElementById('recipe-details').innerHTML = recipeDetails;
+    });
+});
+function submitHistory() {
+    let greenIngredients = [];
+
+    // Get only the green-colored ingredients
+    document.querySelectorAll('#recipe-details span[style*="color:green"]').forEach(span => {
+        greenIngredients.push(span.textContent.trim());
+    });
+
+    // Prepare form data
+    let formData = {
+        user_id: document.querySelector("input[name='user_id']").value,
+        dish_name: document.querySelector("input[name='dish_name']").value,
+        date: document.querySelector("input[name='date']").value,
+        ingredients: greenIngredients.join(", ")
+    };
+
+    // Send data via AJAX (Fetch API)
+    fetch("/add_to_history", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("successMessage").style.display = "block"; // Show success message
+        console.log("Dish added to history:", data);
+    })
+    .catch(error => console.error("Error:", error));
+}
+
+</script>
+{% endblock javascripts %}

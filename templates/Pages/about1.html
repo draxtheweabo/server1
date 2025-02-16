@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %} About Us {% endblock %}
+
+<!-- Element injected in the BODY element -->
+{% block body_class %} sidebar-mini {% endblock body_class %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<link rel="stylesheet" href="/static/assets/plugins/fontawesome-free/css/all.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/jqvmap/jqvmap.min.css">
+<link rel="stylesheet" href="/static/assets/css/adminlte.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/daterangepicker/daterangepicker.css">
+<link rel="stylesheet" href="/static/assets/plugins/summernote/summernote-bs4.min.css">
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="content-wrapper" style="background-color: #E4E0E1;">
+  <!--Start Page Header--> 
+  <div class="content-header">
+      <div class="container-fluid">
+          <div class="row mb-2">
+              <div class="col-sm-6"></div>
+          </div>
+      </div>
+  </div>
+  <!--End Page Header-->
+
+  <style>
+      body {
+          font-family: 'Arial', sans-serif;
+          margin: 0;
+          padding: 0;
+          background-color: #fff8e1;
+          color: #333;
+          line-height: 1.6;
+      }
+
+      header {
+          background-color: #493628;
+          color: white;
+          text-align: center;
+          padding: 20px 0;
+          border-radius: 20px 20px 0 0;
+      }
+
+      header h1 {
+          margin: 0;
+          font-size: 2.5rem;
+      }
+
+      .about-section {
+          max-width: 1200px;
+          margin: 20px auto;
+          padding: 20px;
+          background: white;
+          border-radius: 10px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .about-content {
+          display: flex;
+          gap: 20px;
+          flex-wrap: wrap;
+      }
+
+      .about-text {
+          flex: 1;
+      }
+
+      .about-text p,
+      .about-text ul {
+          margin: 10px 0;
+      }
+
+      .about-text ul {
+          list-style: none;
+          padding: 0;
+      }
+
+      .about-text ul li {
+          margin: 5px 0;
+      }
+      .sub-section ul li {
+        list-style: none;
+        padding: 0;
+      }
+
+      .about-image {
+          flex: 1;
+          max-width: 400px;
+      }
+
+      .about-image img {
+          width: 100%;
+          border-radius: 10px;
+      }
+  </style>
+
+  <!--Start Main Content-->
+  <section class="content">
+      <div style="margin-left: 5%; margin-right: 5%;" >
+        <h3>About Us</h3>
+          <header>
+              <h1>Welcome to RecInScan</h1>
+              <p>Your gateway to delicious Kapampangan cuisine!</p>
+          </header>
+          <div class="about-content" style="background-color: #D6C0B3;">
+              <div class="about-text" style="background-color: #D6C0B3; padding: 2%;">
+                  <h2>Recipe Scanner -- Scan and Recommend!</h2>
+                  <p>
+                      <strong>RecInScan</strong> is your smart kitchen companion that brings Kapampangan flavors to your table. 
+                      It’s designed to help you use your available ingredients wisely, reduce food waste, and create mouthwatering dishes like:
+                  </p>
+                  <ul>
+                      <li>🍽️Sisig</li>
+                      <li>🍽️Tocino</li>
+                      <li>🍽️Menudo</li>
+                      <li>🍽️Caldereta</li>
+                  </ul>
+                  <p>
+                      Using advanced object detection, RecInScan identifies ingredients through a simple scan, offering an effortless way 
+                      to discover new recipes inspired by Pampanga's rich culinary heritage.
+                  </p>
+              </div>
+              <div class="about-image" style="background-color: #D6C0B3; padding: 2%">
+                  <img src="static/assets/img/Recipes/recipe1.jpg" alt="Kapampangan Sisig">
+              </div>
+          </div>
+          <div class="sub-section" style="background-color: #D6C0B3; padding: 2%;" >
+              <h2>Why RecInScan?</h2>
+              <p>
+                  Unlike apps like <em>SuperCook</em>, which rely on manual input, RecInScan automatically detects your ingredients 
+                  and suggests recipes tailored to your kitchen. By doing so, it not only saves time but also helps reduce food waste—benefiting the environment.
+              </p>
+              <p>With RecInScan, you can enjoy:</p>
+              <ul>
+                  <li>🍽️Automatic recipe suggestions</li>
+                  <li>🍽️Smart ingredient detection</li>
+                  <li>🍽️Customizable recipe ideas</li>
+              </ul>
+              <p>
+                  Developed by <strong>Floor Gang</strong>, we’re dedicated to making Filipino cooking easier, smarter, and more enjoyable.
+              </p>
+          </div>
+      </div>
+  </section>
+  <!--End Main Content-->
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<!-- jQuery -->
+<script src="/static/assets/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="/static/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/static/assets/js/adminlte.js"></script>
+{% endblock javascripts %}

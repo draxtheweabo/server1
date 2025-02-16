@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>
+  RecInScan
+  </title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/img/Logo.png') }}">
+  {% block stylesheets %}{% endblock stylesheets %}
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed sidebar-collapse {% block body_class %}{% endblock body_class %}">
+<div class="wrapper">
+{% include 'navigation.html' %}
+{% include 'sidebar.html' %}
+{% block content %}{% endblock content %}
+</div>
+{% block javascripts %}{% endblock javascripts %}
+</body>
+</html>

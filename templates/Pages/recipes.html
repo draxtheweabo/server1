@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/assets/styles.css">
+    <title>RecInScan</title>
+</head>
+<body>
+    <div class="body-content">
+        <div class="header">
+            <h1>Recipes</h1>
+            <p>Here are the finest kapampangan recipes you should try!</p>
+        </div>
+        <div class ="recipe-navbar" style="margin-bottom:60px; ">
+        <!-- change to the correct link, description, name and image -->
+        <div class="recipe-main-content">
+            <ul id="recipe-list" class="list-group">
+                {% for dish in dishes %}
+                    <li class="list-group-item recipe-item" data-recipe="{{ loop.index0 }}">
+                        <div class="recipe-link">
+                            <div>
+                                <img src="{{ dish.image }}" class="recipe-image">
+                            </div>
+                            <div>
+                                <h3>{{ dish.dish_name }}</h3>
+                                <p>{{ dish.description }}</p>
+                            </div>
+                        </div>
+                    </li>
+                    <hr class="dish-divider"></hr>
+                {% endfor %}
+            </ul>
+        </div>
+        <!-- Modal for Recipe Details -->
+        <div id="recipe-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h3>Ingredients and Procedure:</h3>
+                <div id="recipe-details" class="recipe-details"></div>
+            </div>
+        </div>
+        <!-- change to the correct link, description, name and image -->
+    </div>
+    </div>
+    <div class="nav-bar">
+        <a class="nav-link" href = "{{ url_for('about') }}"><img src = "static/assets/icons/Feedback.png" height ="25px"><div>About</div></a>
+        <a class="nav-link" href = "{{ url_for('chat') }}"><img src = "static/assets/icons/speech_bubble.png" height ="25px"><div>AI Chat</div></a>
+        <a class="nav-link" href = "{{ url_for('home') }}"><img src = "static/assets/icons/home.png" height ="25px"><div>Home</div></a>
+        <a class="nav-link" href = "{{ url_for('recipes') }}"><img src = "static/assets/icons/recipesPicked.png" height ="25px"><div class = "navSelect">Recipes</div></a>
+        <a class="nav-link" href = "{{ url_for('profile') }}"><img src = "static/assets/icons/profile.png" height ="25px"><div>Profile</div></a>
+    </div>
+</body>
+</html>
+
+<style>
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    display: none; /* Initially hidden */
+    overflow-y: auto;
+    padding: 10px; /* Prevents content from touching edges */
+}
+
+/* Modal Content */
+.modal-content {
+    background: #E8FFEA;
+    width: 95%; /* More responsive on mobile */
+    height: 80%;
+    max-width: 600px; /* Prevents it from becoming too large on desktop */
+    max-height: 90vh; /* Prevents overflow */
+    overflow-y: auto; /* Enables scrolling inside modal */
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Close Button */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 25px;
+    cursor: pointer;
+    color: #555;
+    transition: color 0.3s;
+}
+
+.close:hover {
+    color: red;
+}
+
+/* Responsive Image - Prevent Excessive Zoom */
+.recipe-image-popup {
+    width: 100%; /* Make it responsive */
+    max-width: 400px; /* Limit maximum width */
+    max-height: 250px; /* Prevent excessive zoom */
+    object-fit: contain; /* Ensures the whole image is visible */
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+/* Title */
+.modal-content h4 {
+    margin-bottom: 10px;
+    font-size: 22px;
+    color: #333;
+}
+
+/* Ingredients & Procedure */
+.modal-content h5 {
+    margin-top: 15px;
+    font-size: 18px;
+    color: #444;
+    border-bottom: 2px solid #E8FFEA;
+    padding-bottom: 5px;
+    display: inline-block;
+}
+
+.modal-content ul {
+    list-style: none;
+    padding: 0;
+}
+
+.modal-content ul li {
+    background: #E8FFEA;
+    margin: 5px 0;
+    padding: 8px;
+    border-radius: 5px;
+}
+
+/* Link Styling */
+.modal-content a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.modal-content a:hover {
+    text-decoration: underline;
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Extra Mobile Tweaks */
+@media screen and (max-width: 480px) {
+    .modal-content {
+        padding: 15px; /* Smaller padding for small screens */
+    }
+    .close {
+        font-size: 22px; /* Adjust close button size */
+    }
+    .recipe-image-popup {
+        max-height: 200px; /* Prevents image from taking too much space */
+    }
+}
+
+.recipe-main-content {
+    display: flex;
+    justify-content: center; /* Center content */
+}
+
+#recipe-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px; /* Space between items */
+    padding: 25px;
+    list-style: none;
+}
+
+/* Style for each recipe item */
+.recipe-item {
+    flex: 1 1 calc(50% - 15px); /* Two columns on desktop */
+    display: flex;
+    align-items: center;
+    background-color: #b7f4bc; /* Optional */
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* Recipe image styles */
+.recipe-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-right: 15px;
+}
+
+/* Divider line */
+.dish-divider {
+    display: none; /* Hide dividers when using a grid layout */
+}
+
+/* Responsive for mobile (one column) */
+@media (max-width: 768px) {
+    .recipe-item {
+        flex: 1 1 100%; /* Single column */
+    }
+}
+
+</style>
+
+<script>
+const recipes = {{ dishes|tojson }};
+const isMobile = window.innerWidth <= 768;
+
+document.querySelectorAll('.recipe-item').forEach(item => {
+    item.addEventListener('click', function() {
+        const recipeIndex = this.getAttribute('data-recipe');
+        const recipe = recipes[recipeIndex];
+
+        // Build ingredient lists
+        const mainIngredients = recipe.ingredients.main.map(ingredient => `<li>${ingredient.name} - ${ingredient.measurement}</li>`).join('');
+        const secondaryIngredients = recipe.ingredients.secondary.map(ingredient => `<li>${ingredient.name} - ${ingredient.measurement}</li>`).join('');
+        const commonIngredients = recipe.ingredients.common.map(ingredient => `<li>${ingredient.name} - ${ingredient.measurement}</li>`).join('');
+
+        // Recipe details with styled sections
+        const recipeDetails = `
+            <h4>${recipe.dish_name}</h4>
+            <img src="${recipe.image}" alt="${recipe.dish_name}" class="recipe-image-popup">
+            <p><strong>Author:</strong> ${recipe.author}</p>
+            <p><strong>Serving:</strong> ${recipe.serving}</p>
+            <p><strong>Cooking Time:</strong> ${recipe.cook_time} minutes</p>
+            <p><strong>Recipe Link:</strong> <a href="${recipe.link}" target="_blank">${recipe.link}</a></p>
+            
+            <h5>Main Ingredients:</h5>
+            <ul>${mainIngredients}</ul>
+            <h5>Secondary Ingredients:</h5>
+            <ul>${secondaryIngredients}</ul>
+            <h5>Common Ingredients:</h5>
+            <ul>${commonIngredients}</ul>
+            <h5>Procedure:</h5>
+            <p>${recipe.instructions.join('<br>')}</p>
+        `;
+
+        document.getElementById('recipe-details').innerHTML = recipeDetails;
+        document.getElementById('recipe-modal').style.display = "flex"; // Show modal
+    });
+});
+
+// Close modal when clicking the close button
+document.querySelector('.close').addEventListener('click', function() {
+    document.getElementById('recipe-modal').style.display = "none";
+});
+
+// Close modal when clicking outside of it
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('recipe-modal');
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+});
+
+</script>
+

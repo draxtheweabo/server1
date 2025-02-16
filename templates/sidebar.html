@@ -1,0 +1,88 @@
+<style>
+  .main-sidebar {
+    background: linear-gradient(to bottom, #2B7E2A 17%, #144213) !important; /* Set the sidebar color */
+    }
+  /* Style adjustments for active link and sidebar */
+  .nav-link.active {
+    background-color: #007bff;
+    color: #ffffff;
+  }
+  .nav-link.active i {
+    color: #ffffff;
+  }
+
+  /* Sidebar logo adjustments for full fill */
+  .brand-section {
+  width: 100%;
+  text-align: center;
+}
+.brand-section img {
+  width: 100%;
+  height: auto;
+  margin-top: 15px;
+}
+.nav-sidebar .nav-item {
+    margin: 0;
+    padding: 0;
+}
+
+</style>
+
+<body class="hold-hold-transition sidebar-mini layout-fixed sidebar-collapse">  
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+  
+    <div class="brand-section">
+      <a href="{{ url_for('home') }}">
+      <img src="/static/assets/img/Logo Banner.jpg" class="brand-image img-fluid" style="width: 100%; height: auto;">
+    </a>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <!-- Scan -->
+          <li class="nav-item">
+            <a href="{{ url_for('scan') }}" class="nav-link {% if 'index.html' in segment %} active {% endif %}">
+              <i class="nav-icon fas fa-search"></i>
+              <p>Scan</p>
+            </a>
+          </li>
+          <!-- Recipes -->
+          <li class="nav-item">
+            <a href="{{ url_for('recipes') }}" class="nav-link {% if 'recipes.html' in segment %} active {% endif %}">
+              <i class="nav-icon fas fa-book"></i>
+              <p>Recipes</p>
+            </a>
+          </li>
+          <!-- Feedback -->
+          <li class="nav-item">
+            <a href="{{ url_for('recipes') }}" class="nav-link {% if 'recipes.html' in segment %} active {% endif %}">
+              <i class="nav-icon fas fa-book"></i>
+              <p>Feedback</p>
+            </a>
+          </li>
+          <!-- RecInAIChat -->
+          <li class="nav-item">
+            <a href="{{ url_for('chat') }}" class="nav-link {% if 'recipes.html' in segment %} active {% endif %}">
+              <i class="nav-icon fas fa-book"></i>
+              <p>RecInAIChat</p>
+            </a>
+          </li>
+          <!-- About -->
+          <li class="nav-item">
+            <a href="{{ url_for('about') }}" class="nav-link {% if 'about.html' in segment %} active {% endif %}">
+              <i class="nav-icon fas fa-info-circle"></i>
+              <p>About</p>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+</body>

@@ -1,0 +1,496 @@
+{% block stylesheets %}
+<link rel="stylesheet" href="/static/assets/plugins/fontawesome-free/css/all.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/jqvmap/jqvmap.min.css">
+<link rel="stylesheet" href="/static/assets/css/adminlte.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/daterangepicker/daterangepicker.css">
+<link rel="stylesheet" href="/static/assets/plugins/summernote/summernote-bs4.min.css">
+<style>
+.text-white {
+  color: white;
+}
+.pushmenu {
+    color: white; /* Icon color */
+    width: 50px; /* Slim width */
+    height: 150px; /* Taller height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px; /* Slightly rounded corners */
+}
+
+.pushmenu i {
+    font-size: 1.5rem; /* Adjust icon size */
+}
+
+/* Profile Circle  */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+}
+
+.nav-circle-button {
+    width: 40px; /* Set width for the circle */
+    height: 40px; /* Set height for the circle */
+    border-radius: 50%; /* Makes it circular */
+    overflow: hidden; /* Ensures the image fits inside the circle */
+    border: 2px solid white; /* Optional border for styling */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: black; /* Optional: background color */
+}
+
+.nav-circle-button img {
+    width: 100%; /* Ensures the image scales properly */
+    height: 100%;
+    object-fit: cover; /* Ensures the image fits nicely within the circle */
+}
+
+.nav-circle-button:hover {
+    border-color: #ffc107; /* Add hover effect with a different border color */
+}
+
+/*CSS for Profile*/
+/* Popup Container (Hidden by default) */
+.popup-container {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Dimmed background */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Popup Content */
+.popup-content {
+    background: #2B7E2A; /* Green background */
+    color: white;
+    border-radius: 10px;
+    padding: 20px;
+    width: 800px;
+    height: 400px;
+    max-height: 400px; 
+    overflow-y: auto;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* Close Button */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+.close-btn2 {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #2B7E2A;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Popup Header */
+.popup-header {
+    display: flex; /* Use flexbox for the container */
+    flex-direction: row; /* Stack the elements vertically */
+    align-items: center; /* Center the items horizontally */
+}
+
+.popup-header img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    margin-right: 80px; /* Space between the image and h2 */
+    margin-left: 50px;
+    margin-top: 30px;
+}
+.con {
+  flex-direction: column; /* Stack the elements vertically */
+  align-items: center; /* Center the items horizontally */
+  text-align: left;
+}
+.popup-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+/* Make sure <p> stays below <h2> */
+.popup-header p {
+  flex-direction: column;
+  align-items: center;
+    margin: 5px 0 10px;
+}
+
+.edit-link {
+    color: white;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* Dish History Button */
+.dish-history-btn {
+    background: #2B7E2A;
+    color: white;
+    border: 2px solid white;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.dish-history-btn:hover {
+    background: #ffc107;
+    color: #28a745;
+}
+/*Second pop up*/
+/* General Popup Styles */
+.popup2 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup2.hidden2 {
+  display: none;
+}
+
+.popup-content2 {
+  background-color: #e9f5e9;
+  border-radius: 10px;
+  padding: 20px;
+  width: 800px;
+  max-height: 500px; /* Fixed max height */
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.popup-body {
+  flex: 1; /* Takes up all available space */
+  overflow-y: auto; /* Enables scrolling */
+  margin-bottom: 10px; /* Space before the button */
+}
+
+#confirmButton {
+  width: 100%; /* Full width */
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#confirmButton:hover {
+  background-color: #45a049;
+}
+
+#clearButton {
+  width: 100%; /* Full width */
+  padding: 10px;
+  background-color: #d84315;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#clearButton:hover {
+  background-color: #b71c1c;
+}
+
+.pop2h2 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #2e7d32;
+}
+
+.category2 {
+  margin-bottom: 20px;
+}
+
+.category2 h3 {
+  background-color: #2e7d32;
+  color: white;
+  font-size: 18px;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.items2 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.item2 {
+  background-color: #2B7E2A;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.item2:hover {
+  background-color: #c8e6c9;
+}
+
+.highlight2 {
+  background-color: #ffccbc;
+  color: #d84315;
+  font-weight: bold;
+}
+
+.item2-btn2 {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #d32f2f;
+}
+
+.item2:hover {
+  color: #b71c1c;
+}
+
+</style>
+{% endblock stylesheets %}
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light" style="background-color: #2B7E2A;">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link pushmenu" style="color: white;" data-widget="pushmenu" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+      <div class="col-sm-6">
+        <h1 class="m-0 " style="color: white;">RecInScan</h1>
+      </div>      
+    </ul>
+    <!-- Right navbar links -->
+    <a class="nav-circle-button" id="openPopup1">
+      <img src="your-profile-image.png" alt="Profile" />
+    </a>
+  </nav>
+
+<div class="popup-container" id="popup">
+  <div class="popup-content">
+      <button class="close-btn" id="closePopup1">×</button>
+      <div class="popup-header">
+          <img src="/static/assets/img/Logo.png" alt="Profile" class="popup-image" />
+          <div class="con">
+          <h2 class="headamong">{{ current_user }}</h2>
+          <p>Filtered Ingredients: {{ preference }}</p>
+          <a class="edit-link" id="openPopup2">Edit?</a>
+          </div>
+      </div>
+      <button class="dish-history-btn" id = "closePopup3">Dish History</button>
+      <button class="dish-history-btn" id = "logoutButton">Log Out</button>
+  </div>
+</div>
+
+<div id="popup2" class="popup2 hidden2">
+  <button class="close-btn2" id="closePopup2">x</button>
+  <div class="popup-content2">
+
+    <h2 class="pop2h2">Preference</h2>
+      <div class="popup-body">
+      {% for category, items in categories.items() %}
+      <div class="category2">
+          <h3>{{ category }}</h3>
+          <div class="items2">
+              {% for item in items %}
+              <button class="item2" onclick="toggleHighlight(this)">{{ item }}</button>
+              {% endfor %}
+          </div>
+      </div>
+      {% endfor %}
+    </div>
+    <button id="confirmButton">Confirm</button>
+    </br>
+    <button id="clearButton">Clear All</button>
+  </div>
+</div>
+
+<script>
+// References for the first popup
+const openPopup1 = document.getElementById('openPopup1');
+const closePopup1 = document.getElementById('closePopup1');
+const popup1 = document.getElementById('popup');
+
+// References for the second popup
+const openPopup2 = document.getElementById('openPopup2');
+const closePopup2 = document.getElementById('closePopup2');
+const popup2 = document.getElementById('popup2');
+
+// Open the first popup
+openPopup1.addEventListener('click', () => {
+  popup1.style.display = 'flex';
+  popup2.style.display = 'none';
+});
+
+// Close the first popup
+closePopup1.addEventListener('click', () => {
+  popup1.style.display = 'none';
+});
+
+// Open the second popup from the first popup
+openPopup2.addEventListener('click', (e) => {
+  e.preventDefault(); // Prevent default anchor behavior
+  popup1.style.display = 'none'; // Hide the first popup
+  popup2.style.display = 'flex'; // Show the second popup
+});
+
+// Close the second popup
+closePopup2.addEventListener('click', () => {
+  popup2.style.display = 'none';
+});
+
+// Optional: Close popup when clicking outside the content
+[popup1, popup2].forEach((popup) => {
+  popup.addEventListener('click', (e) => {
+    if (e.target === popup) {
+      popup.style.display = 'none';
+    }
+  });
+});
+
+let userPreferences = {{ preference | tojson | safe }};  // Load user preferences from Flask
+
+document.addEventListener("DOMContentLoaded", function () {
+  const clearButton = document.getElementById("clearButton");
+
+  // Clear button click listener
+  clearButton.addEventListener("click", function () {
+    // Remove all highlights
+    document.querySelectorAll(".item2").forEach(button => {
+        let itemName = button.textContent.trim();
+        
+        // Check if item exists in userPreferences before updating
+        if (userPreferences.includes(itemName)) {
+            button.classList.remove("highlight2");
+            updatePreference(itemName, "remove");
+        }
+    });
+
+    userPreferences = [];  // Clear the local preferences array
+});
+
+
+  // Loop through each item and handle click and highlight logic
+  document.querySelectorAll(".item2").forEach(button => {
+    let itemName = button.textContent.trim();
+
+    // Highlight if preference exists
+    if (userPreferences.includes(itemName)) {
+      button.classList.add("highlight2");
+    }
+
+    // Toggle selection on click
+    button.addEventListener("click", function () {
+      if (button.classList.contains("highlight2")) {
+        button.classList.remove("highlight2");
+        updatePreference(itemName, "remove");
+        // Remove from local preferences array
+        userPreferences = userPreferences.filter(item => item.trim() == itemName);
+      } else {
+        button.classList.add("highlight2");
+        updatePreference(itemName, "add");
+        // Add to local preferences array
+        if (!userPreferences.includes(itemName)) {
+          userPreferences.push(itemName);
+          console.log("Current userPreferences before clearing:", userPreferences);
+
+        }
+      }
+    });
+  });
+});
+
+// Function to update preferences for all items at once
+async function updateAllPreferences(action) {
+  console.log("Current userPreferences:", userPreferences); 
+  for (let itemName of userPreferences) {
+    await updatePreference(itemName, action); // Wait for each fetch to complete
+  }
+}
+
+// Function to update individual preference
+async function updatePreference(item, action) {
+  try {
+    const response = await fetch("/update_preference", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ item: item, action: action }),
+    });
+
+    const data = await response.json();
+    console.log(data.message);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+const confirmButton = document.getElementById("confirmButton");
+confirmButton.addEventListener("click", function () {
+    // Close the popup
+    popup.style.display = 'none';
+    
+    // Reload the page (or redirect to any specific URL)
+    location.reload();  // Or use window.location.href = '/yourpage' if you want a specific route
+  });
+
+clearButton.addEventListener("click", function () {
+  // Close the popup
+  popup.style.display = 'none';
+  
+  // Reload the page (or redirect to any specific URL)
+  location.reload();  // Or use window.location.href = '/yourpage' if you want a specific route
+});
+
+
+  document.getElementById("logoutButton").addEventListener("click", function () {
+    fetch("/logout", {method: "POST",})
+    .then(response => {
+      // Redirect to a different page or reload the page after logout
+      window.location.href = '/'; // Or any page you want after logout
+    })
+    .catch(error => console.error("Error:", error));
+  });
+
+</script>
+  <!-- /.navbar -->

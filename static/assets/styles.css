@@ -1,0 +1,486 @@
+/* Import Livvic font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Livvic:wght@400;700&display=swap');
+
+/* Reset Default Margins and Padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* General Body Styling */
+html, body {
+    font-family: 'Livvic', Arial, sans-serif;
+    background-color: #E8FFEA;
+    color: #333;
+    height: 100%;
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+}
+
+/* Container for Content */
+.container {
+    width: 100%;
+    max-width: 400px; /* Limits width for readability */
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .container {
+        padding: 15px;
+    }
+
+    .button {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+/* Bottom Navigation Bar */
+.nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #E8FFEA;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0;
+    border-top: 2px solid #ddd;
+    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    padding: 10px 0; /* Adjust padding as needed */
+    height: 60px; /* Set a fixed height */
+}
+
+/* Navigation Links on the bottom of the page.. */
+.nav-link {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    font-size: 10px;
+    color: #333;
+    text-decoration: none;
+    transition: 0.3s;
+    font-weight: bold;
+}
+
+.navSelect {
+    color: #2B7E2A;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.nav-link a {
+    height: 100%;
+}
+
+/* Hover & Active Effects */
+.nav-link:hover {
+    background: #f0f0f0;
+}
+
+.nav-link:active {
+    color: #007bff;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+    .nav-link {
+        font-size: 12px;
+        padding: 8px;
+    }
+}
+
+/* Full header part */
+.body-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+    top: 0;
+    z-index: 990;
+    margin: 0;
+}
+
+/* header part */
+.header {
+    background-color: #000000;
+    padding: 13px;
+    width: 100%;
+    padding-left: 60px; 
+    color: white;
+}
+@media (max-width: 768px) {
+    .header {
+      padding-left: 10px; 
+    }
+  }
+
+.header h1 {
+    margin: 0;
+    font-size: 24px;
+    color: white;
+}
+
+/* profile header part */
+.profileheader {
+    display: flex;
+    flex-direction:row;
+    background-color: #2B7E2A;
+    padding: 13px;
+    width: 100%;
+    color: white;
+    height: 100px;
+    justify-content: center;
+}
+
+.main-content h3 {
+    margin-top: 10px;
+}
+
+.main-content h4 {
+    text-align: left; 
+    padding-left: 20px; 
+    margin-top: 10px;
+}
+
+.swiper-wrapper {
+    font-size: 12px;
+
+}
+
+.swiper-slide a {
+    text-decoration: none;
+    color: #333;
+
+}
+
+.profileheader a {
+    color: white;
+    font-weight: bold;
+}
+.profile-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 auto;
+    width: 100%;
+
+}
+
+.profileheader h1 {
+    margin: 0;
+    font-size: 24px;
+    color: white;
+}
+
+
+/* Meal plan part */
+.meal-plan {
+    background-color: #2B7E2A;
+    padding: 10px 0;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+    width: 100%;
+    color: white;
+    margin: 0;
+}
+
+.calendar {
+    position: relative;
+    max-width: 100%;
+    margin: auto;
+}
+
+.current-day {
+    text-align: center;
+    padding: 20px;
+}
+
+.today-label {
+    font-size: 16px;
+    color: red;
+    margin-bottom: 5px;
+}
+
+.date-square {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    background-color: white;
+    color: #333;
+    border: 2px solid #333;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 10px;
+}
+
+img {
+    vertical-align: middle;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -22px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.6s ease;
+    user-select: none;
+}
+
+.prev {
+    left: 0;
+}
+
+.next {
+    right: 0;
+}
+
+/* Add a background color to the buttons on hover */
+.prev:hover, .next:hover {
+    background-color: rgba(0,0,0,0.8);
+}
+
+.main-content {
+    text-align: center;
+    padding-bottom: 60px; /* Ensure content is not hidden behind the nav-bar */
+}
+
+/* Swiper container */
+.swiper-container {
+    width: 100%;
+    overflow-x: scroll;
+    display: flex;
+    padding: 10px 0;
+}
+
+.swiper-wrapper {
+    display: flex;
+}
+
+.swiper-slide {
+    min-width: 150px;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.swiper-slide img {
+    width: 100%;
+}
+
+/* recipes page */
+.recipe-main-content {
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid #333;
+    padding: 10px 0;
+}
+.recipe-main-content a {
+    width: 100%;
+    text-decoration: none;
+}
+.recipe-link {
+    display: flex;
+    flex-direction: row;
+}
+
+.recipe-link p, .recipe-link h3 {
+    color: #333;
+}
+
+.recipe-navbar a {
+    text-decoration: none;
+}
+
+/* Circular nav link */
+.circle-nav-link {
+    position: fixed;
+    bottom: 80px; /* Adjust based on the height of the nav-bar */
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: #2B7E2A;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    z-index: 1001;
+    border: 1px solid white;
+}
+
+.circle-nav-link img {
+    width: 30px;
+    height: 30px;
+}
+
+/* Hover effect for circular nav link */
+.circle-nav-link:hover {
+    background-color: #256a24;
+}
+
+.scanner-body-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+    top: 0;
+    z-index: 990;
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh; /* Ensure content is not hidden behind the nav-bar */
+}
+.scanner-content {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Back button on scanner*/
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #2B7E2A;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.back-button:hover {
+    background-color: #256a24;
+}
+
+/* Scanner buttons */
+.scanner-button {
+    background-color: #2B7E2A;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    border: 2px solid white; /* Added white border */
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+
+.scanner-button:hover {
+    background-color: #256a24;
+}
+
+.camera-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.camera-container p {
+    margin-top: 40px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.textbox-input {
+    display: flex;
+    font-size: 14px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: space-evenly;
+    position: fixed;
+    bottom: 70px;
+    width: 100%;
+}
+
+.input-button {
+    background-color: #2B7E2A;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    border: none;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.input-button:hover {
+    background-color: #256a24;
+}
+
+.scanned-content {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.scanned-image {
+    display: flex;
+
+}
+
+.scanned-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.ingredient-list-scanned {
+    border-top: 1px solid black;
+    width: 100%;
+}
+
+.ingredients-list-content {
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid #333;
+    padding: 10px 0;
+}
+
+.ingredient-link {
+    display: flex;
+    flex-direction: row;
+}
+.centering {
+    text-align: center;
+}

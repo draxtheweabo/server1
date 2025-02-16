@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/assets/styles.css">
+    <title>RecInScan</title>
+</head>
+<body>
+    <div class="body-content">
+        <div class="header">
+            <h1>AI ChatBot</h1>
+            <p>Chat with our chatbot to get insights on your recipes!</p>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-box">
+                {% if response %}
+                    <div class="ai-message">{{ response }}</div>
+                {% endif %}
+            </div>
+            <form class="input-container" method="POST">
+                <textarea name="user_input" placeholder="Type a message..." required></textarea>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="nav-bar">
+        <a class="nav-link" href = "{{ url_for('about') }}"><img src = "static/assets/icons/Feedback.png" height ="25px"><div>About</div></a>
+        <a class="nav-link" href = "{{ url_for('chat') }}"><img src = "static/assets/icons/speechbubblePicked.png" height ="25px"><div class = "navSelect">AI Chat</div></a>
+        <a class="nav-link" href = "{{ url_for('home') }}"><img src = "static/assets/icons/home.png" height ="25px"><div>Home</div></a>
+        <a class="nav-link" href = "{{ url_for('recipes') }}"><img src = "static/assets/icons/recipes.png" height ="25px"><div>Recipes</div></a>
+        <a class="nav-link" href = "{{ url_for('profile') }}"><img src = "static/assets/icons/profile.png" height ="25px"><div>Profile</div></a>
+    </div>
+</body>
+</html>
+
+<style>
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 70%;
+    margin: auto;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.chat-box {
+    padding: 15px;
+    height: 65dvh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column-reverse;
+}
+.user-message, .ai-message {
+    padding: 10px;
+    border-radius: 10px;
+    margin: 5px 0;
+    max-width: 70%;
+}
+.user-message {
+    background: #0078ff;
+    color: white;
+    align-self: flex-end;
+}
+.ai-message {
+    background: #e4e6eb;
+    color: black;
+    align-self: flex-start;
+}
+.input-container {
+    display: flex;
+    padding: 10px;
+    background: white;
+    border-top: 1px solid #ccc;
+}
+textarea {
+    flex: 1;
+    height: 40px;
+    border: none;
+    padding: 10px;
+    border-radius: 20px;
+    resize: none;
+    outline: none;
+}
+button {
+    background: #0078ff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin-left: 10px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+</style>

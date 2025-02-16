@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="">
+    <title>RecInScan</title>
+</head>
+<style>
+
+</style>
+<body>
+    <div class="body-content"l>
+      <div class="header">
+        <h1>Profile</h1>
+        <p>Chat with our chatbot to get insights on your recipes!</p>
+        <a class="edit-link" id="openPopup1"></a>
+      </div>
+        <div class="profileheader">
+            <div class = "profile-image">
+                <img src = "static/assets/icons/profile.png" height = "100%", width = "100%">
+            </div>
+            
+            <div class = "profile-center" >
+                <h1>{{ current_user }}</h1>
+            </div>
+            <button class="scanner-button"id = "logoutButton">Log Out</button>
+        </div>
+    </div>
+
+    <div class="scanner-body-content ">
+      <section class="section-left">
+      <div class="card" style="background: url('/static/assets/img/bg2.jpg') center/cover no-repeat;">
+        <div class="header-text">Preference</div>
+        <div class="content-box">
+          <div class="popup-content2">
+            <div class="popup-body">
+            {% for category, items in categories.items() %}
+            <div class="category2">
+                <h3>{{ category }}</h3>
+                <div class="items2">
+                    {% for item in items %}
+                    <button class="item2" onclick="toggleHighlight(this)">{{ item }}</button>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+            </div>
+            <button id="confirmButton">Confirm</button>
+            </br>
+            <button id="clearButton">Clear All</button>
+        </div>
+        </div>
+      </div>
+      </section>
+      <section class="section-right">
+      <div class="card3" style=" background: url('/static/assets/img/bg2.jpg') center/cover no-repeat;">
+        <div class="header-text">Dish History</div>
+        <div class="content-box" >
+        {% for dish in history %}
+        <div class="dish-entry">
+            <div class="dish-name">{{ dish.dish_name }}</div>
+            <div class="date">{{ dish.date }}</div>
+            <div class="ingredients">Ingredients: {{ dish.ingredients }}</div>
+        </div>
+        {% else %}
+        <p>No dish history found.</p>
+        {% endfor %}
+        </div>
+      </div>
+      </section>
+    </div> 
+    <div class="nav-bar">
+        <a class="nav-link" href="{{ url_for('about') }}"><img src="static/assets/icons/Feedback.png" height="25px"><div>About</div></a>
+        <a class="nav-link" href="{{ url_for('chat') }}"><img src="static/assets/icons/speech_bubble.png" height="25px"><div>AI Chat</div></a>
+        <a class="nav-link" href="{{ url_for('home') }}"><img src="static/assets/icons/home.png" height="25px"><div>Home</div></a>
+        <a class="nav-link" href="{{ url_for('recipes') }}"><img src="static/assets/icons/recipes.png" height="25px"><div>Recipes</div></a>
+        <a class="nav-link" href="{{ url_for('profile') }}"><img src="static/assets/icons/profilePicked.png" height="25px"><div class="navSelect">Profile</div></a>
+    </div>
+
+    <div class="popup-container" id="popup">
+        <div class="popup-content">
+            <button class="close-btn" id="closePopup1">×</button>
+            <div class="popup-header">
+                <img src="static/assets/icons/profile.png" alt="Profile" class="popup-image" />
+                <div class="con">
+                <h1 class="headamong">{{ current_user }}</h1>
+                <p>Filtered Ingredients: {{ preference }}</p>
+                <a class="edit-link" id="openPopup2">Edit?</a>
+                </div>
+            </div>
+            <button class="dish-history-btn" id = "closePopup3">Dish History</button>
+            <button class="dish-history-btn" id = "logoutButton">Log Out</button>
+        </div>
+    </div>
+      
+    <div id="popup2" class="popup2 hidden2">
+    <button class="close-btn2" id="closePopup2">x</button>
+    <div class="popup-content2">
+    
+        <h2 class="pop2h2">Preference</h2>
+        <div class="popup-body">
+        {% for category, items in categories.items() %}
+        <div class="category2">
+            <h3>{{ category }}</h3>
+            <div class="items2">
+                {% for item in items %}
+                <button class="item2" onclick="toggleHighlight(this)">{{ item }}</button>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+        </div>
+        <button id="confirmButton">Confirm</button>
+        </br>
+        <button id="clearButton">Clear All</button>
+    </div>
+    </div>      
+</body>
+</html>
+<style>
+.dish-entry {
+    background: #f8f8f8;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.dish-entry:hover {
+    transform: scale(1.02);
+}
+
+.dish-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.date {
+    font-size: 14px;
+    color: #888;
+    margin-top: 5px;
+}
+
+.ingredients {
+    font-size: 14px;
+    color: #555;
+    margin-top: 10px;
+    font-style: italic;
+}
+</style>
+<style>
+  /* Import Livvic font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Livvic:wght@400;700&display=swap');
+
+/* Reset Default Margins and Padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* General Body Styling */
+html, body {
+    font-family: 'Livvic', Arial, sans-serif;
+    background-color: #E8FFEA;
+    color: #333;
+    height: 100%;
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+/* Container for Content */
+.container {
+    width: 100%; /* Limits width for readability */
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .container {
+        padding: 15px;
+    }
+
+    .button {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+/* Bottom Navigation Bar */
+.nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #E8FFEA;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0;
+    border-top: 2px solid #ddd;
+    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    padding: 10px 0; /* Adjust padding as needed */
+    height: 60px; /* Set a fixed height */
+}
+
+/* Navigation Links on the bottom of the page.. */
+.nav-link {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    font-size: 10px;
+    color: #333;
+    text-decoration: none;
+    transition: 0.3s;
+    font-weight: bold;
+}
+
+.navSelect {
+    color: #2B7E2A;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.nav-link a {
+    height: 100%;
+}
+
+/* Hover & Active Effects */
+.nav-link:hover {
+    background: #f0f0f0;
+}
+
+.nav-link:active {
+    color: #007bff;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+    .nav-link {
+        font-size: 12px;
+        padding: 8px;
+    }
+}
+
+/* Full header part */
+.body-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+    top: 0;
+    z-index: 990;
+    margin: 0;
+}
+
+/* header part */
+.header {
+    background-color: #000000;
+    padding: 13px;
+    width: 100%;
+    padding-left: 60px; 
+    color: white;
+}
+@media (max-width: 768px) {
+  .header {
+    padding-left: 10px; 
+  }
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 24px;
+    color: white;
+}
+
+/* profile header part */
+.profileheader {
+    display: flex;
+    flex-direction:row;
+    background-color: #2B7E2A;
+    padding: 13px;
+    padding-left: 60px;
+    width: 100%;
+    color: white;
+    height: 100px;
+    justify-content: center;
+}
+@media (max-width: 768px) {
+  .profileheader {
+    padding-left: 10px; 
+  }
+  
+}
+
+.main-content h3 {
+    margin-top: 10px;
+}
+
+.main-content h4 {
+    text-align: left; 
+    padding-left: 20px; 
+    margin-top: 10px;
+}
+
+.swiper-wrapper {
+    font-size: 12px;
+
+}
+
+.swiper-slide a {
+    text-decoration: none;
+    color: #333;
+
+}
+
+.profileheader a {
+    color: white;
+    font-weight: bold;
+}
+.profile-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 auto;
+    width: 100%;
+
+}
+
+.profileheader h1 {
+    margin: 0;
+    font-size: 24px;
+    color: white;
+}
+
+
+/* Meal plan part */
+.meal-plan {
+    background-color: #2B7E2A;
+    padding: 10px 0;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+    width: 100%;
+    color: white;
+    margin: 0;
+}
+
+.calendar {
+    position: relative;
+    max-width: 100%;
+    margin: auto;
+}
+
+.current-day {
+    text-align: center;
+    padding: 20px;
+}
+
+.today-label {
+    font-size: 16px;
+    color: red;
+    margin-bottom: 5px;
+}
+
+.date-square {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    background-color: white;
+    color: #333;
+    border: 2px solid #333;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 10px;
+}
+
+img {
+    vertical-align: middle;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -22px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.6s ease;
+    user-select: none;
+}
+
+.prev {
+    left: 0;
+}
+
+.next {
+    right: 0;
+}
+
+/* Add a background color to the buttons on hover */
+.prev:hover, .next:hover {
+    background-color: rgba(0,0,0,0.8);
+}
+
+.main-content {
+    text-align: center;
+    padding-bottom: 60px; /* Ensure content is not hidden behind the nav-bar */
+}
+
+/* Swiper container */
+.swiper-container {
+    width: 100%;
+    overflow-x: scroll;
+    display: flex;
+    padding: 10px 0;
+}
+
+.swiper-wrapper {
+    display: flex;
+}
+
+.swiper-slide {
+    min-width: 150px;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.swiper-slide img {
+    width: 100%;
+}
+
+/* recipes page */
+.recipe-main-content {
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid #333;
+    padding: 10px 0;
+}
+.recipe-main-content a {
+    width: 100%;
+    text-decoration: none;
+}
+.recipe-link {
+    display: flex;
+    flex-direction: row;
+}
+
+.recipe-link p, .recipe-link h3 {
+    color: #333;
+}
+
+.recipe-navbar a {
+    text-decoration: none;
+}
+
+/* Circular nav link */
+.circle-nav-link {
+    position: fixed;
+    bottom: 80px; /* Adjust based on the height of the nav-bar */
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: #2B7E2A;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    z-index: 1001;
+    border: 1px solid white;
+}
+
+.circle-nav-link img {
+    width: 30px;
+    height: 30px;
+}
+
+/* Hover effect for circular nav link */
+.circle-nav-link:hover {
+    background-color: #256a24;
+}
+
+/* Back button on scanner*/
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #2B7E2A;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.back-button:hover {
+    background-color: #256a24;
+}
+
+/* Scanner buttons */
+.scanner-button {
+    background-color: #2B7E2A;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    border: 2px solid white; /* Added white border */
+    margin-top: 10px;
+    cursor: pointer;
+    width: 10%; 
+    margin-bottom: 10px;
+    margin-right: 60px; 
+    font-size: 20px;
+}
+
+.scanner-button:hover {
+    background-color: #256a24;
+}
+@media (max-width: 768px) {
+  .scanner-button {
+    width: 40%; 
+    margin-right: 10px; 
+    font-size: 15px;
+  }
+}
+.camera-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.camera-container p {
+    margin-top: 40px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.textbox-input {
+    display: flex;
+    font-size: 14px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: space-evenly;
+    position: fixed;
+    bottom: 70px;
+    width: 100%;
+}
+
+.input-button {
+    background-color: #2B7E2A;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    border: none;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.input-button:hover {
+    background-color: #256a24;
+}
+
+.scanned-content {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.scanned-image {
+    display: flex;
+
+}
+
+.scanned-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.ingredient-list-scanned {
+    border-top: 1px solid black;
+    width: 100%;
+}
+
+.ingredients-list-content {
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid #333;
+    padding: 10px 0;
+}
+
+.ingredient-link {
+    display: flex;
+    flex-direction: row;
+}
+.centering {
+    text-align: center;
+}
+</style>
+<style>
+.card * {
+  position: relative;
+  z-index: 1;
+}
+.card2 * {
+  position: relative;
+  z-index: 1;
+}
+.card3 * {
+  position: relative;
+  z-index: 1;
+}
+.scanner-body-content {
+  display: flex;
+  justify-content: space-between; /* Pushes sections apart */
+  width: 100%;
+}
+.section-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Aligns items to the left */
+  width: 45%; /* Takes up half the width */
+  margin-left: 40px;
+  margin-bottom: 60px;
+  height: 80%;
+  
+}
+.section-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 50%; /* Adjust width to balance with left */
+  margin-right: 40px;
+  
+}
+.card, .card2 {
+  color: white;
+  width: 100%; /* Ensures both cards take up the full width of the section */
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  padding-top: 10px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.card3 {
+  color: white;
+  width: 100%; /* Ensures both cards take up the full width of the section */
+  padding-top: 10px;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  overflow: hidden;
+  max-height: 617px;
+  margin-top: 20px;
+}
+/* === Responsive Design for Mobile (Stacking Sections) === */
+@media (max-width: 768px) {
+  .scanner-body-content {
+    flex-direction: column; /* Stack sections vertically */
+    align-items: center;
+  }
+  .card,.card2,.card3{
+    max-height: 620px;
+    overflow: scroll;
+  }
+
+  .section-right {
+    width: 90%; /* Full width on small screens */
+    height: 40%;
+    margin-right: 0;
+    margin-bottom: 60px;
+    margin-top: 0;
+    order: 2; /* Right section appears on top */
+  }
+
+  .section-left {
+    height: 40%;
+    width: 90%; /* Full width on small screens */
+    margin-left: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    order: 1; /* Left section appears below */
+  }
+}
+/* Dark overlay applied only to the background */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Adjust opacity here */
+  border-radius: 12px;
+  z-index: 0; /* Behind text */
+}
+/* Dark overlay applied only to the background */
+.card2::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Adjust opacity here */
+  border-radius: 12px;
+  z-index: 0; /* Behind text */
+}
+.card3::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Adjust opacity here */
+  border-radius: 12px;
+  z-index: 0; /* Behind text */
+}
+
+.card3 .header-text {
+  font-size: 24px;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.card3 .header-subtext {
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+
+.card2 .header-text {
+  font-size: 24px;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.card2 .header-subtext {
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+
+.card .header-text {
+  font-size: 24px;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.card .header-subtext {
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+.content-box {
+  overflow: auto;
+  text-align: center;
+  background: rgba(0, 128, 0, 1);
+  padding: 15px;
+  border-radius: 8px;
+  height: 90%;
+  margin-top: 10px;
+  padding-top: 20px;
+  margin-bottom: 30px
+}
+
+.custom-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background: white;
+  color: green;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.custom-button:hover {
+  background: lightgreen;
+}
+
+
+</style>
+<style>
+.popup-container {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Dimmed background */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 10px; /* Ensures proper spacing on smaller screens */
+}
+
+/* Popup Content */
+.popup-content {
+    background: #2B7E2A; /* Green background */
+    color: white;
+    border-radius: 10px;
+    padding: 20px;
+    width: 80%;
+    max-width: 40;
+    height: auto;
+    max-height: 90vh; /* Prevents overflow on small screens */
+    overflow-y: auto;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* Close Button */
+.close-btn, .close-btn2 {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.close-btn { color: white; }
+.close-btn2 { color: #2B7E2A; }
+
+/* Popup Header */
+.popup-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center; /* Ensures proper centering */
+    flex-wrap: wrap; /* Allows wrapping on small screens */
+    text-align: center;
+}
+
+/* Image */
+.popup-header img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin: 20px;
+}
+
+/* Text Container */
+.con {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* Title */
+.popup-header h2 {
+    margin: 10px 0;
+    font-size: 1.5rem;
+}
+
+/* Description */
+.popup-header p {
+    margin: 5px 0 10px;
+    font-size: 1rem;
+}
+
+/* Edit Link */
+.edit-link {
+    color: white;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* Dish History Button */
+.dish-history-btn {
+    background: #2B7E2A;
+    color: white;
+    border: 2px solid white;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.dish-history-btn:hover {
+    background: #ffc107;
+    color: #28a745;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .popup-content {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .popup-header {
+        flex-direction: column; /* Stack image and text */
+        text-align: center;
+    }
+
+    .popup-header img {
+        width: 120px;
+        height: 120px;
+        margin: 10px auto;
+    }
+
+    .popup-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .popup-header p {
+        font-size: 0.9rem;
+    }
+
+    .dish-history-btn {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .popup-content {
+        width: 95%;
+        padding: 10px;
+    }
+
+    .popup-header img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .popup-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .popup-header p {
+        font-size: 0.85rem;
+    }
+
+    .dish-history-btn {
+        font-size: 0.85rem;
+        padding: 6px 10px;
+    }
+}
+
+/*Second pop up*/
+/* General Popup Styles */
+.popup2 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup2.hidden2 {
+  display: none;
+}
+
+.popup-content2 {
+  background-color: #e9f5e9;
+  border-radius: 10px;
+  padding: 20px;
+  max-height: 500px; /* Fixed max height */
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.popup-body {
+  flex: 1; /* Takes up all available space */
+  overflow-y: auto; /* Enables scrolling */
+  margin-bottom: 10px; /* Space before the button */
+}
+
+#confirmButton {
+  width: 100%; /* Full width */
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#confirmButton:hover {
+  background-color: #45a049;
+}
+
+#clearButton {
+  width: 100%; /* Full width */
+  padding: 10px;
+  background-color: #d84315;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#clearButton:hover {
+  background-color: #b71c1c;
+}
+
+.pop2h2 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #2e7d32;
+}
+
+.category2 {
+  margin-bottom: 20px;
+}
+
+.category2 h3 {
+  background-color: #2e7d32;
+  color: white;
+  font-size: 18px;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+.items2 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.item2 {
+  background-color: #2B7E2A;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.item2:hover {
+  background-color: #c8e6c9;
+}
+
+.highlight2 {
+  background-color: #ffccbc;
+  color: #d84315;
+  font-weight: bold;
+}
+
+.item2-btn2 {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #d32f2f;
+}
+
+.item2:hover {
+  color: #b71c1c;
+}
+</style>
+<style>
+  h1::first-letter {
+      text-transform: uppercase;
+  }
+</style>
+<script>
+document.getElementById("logoutButton").addEventListener("click", function () {
+  fetch("/logout", {method: "POST",})
+  .then(response => {
+    // Redirect to a different page or reload the page after logout
+    window.location.href = '/'; // Or any page you want after logout
+  })
+  .catch(error => console.error("Error:", error));
+});
+// References for the first popup
+const openPopup1 = document.getElementById('openPopup1');
+const closePopup1 = document.getElementById('closePopup1');
+const popup1 = document.getElementById('popup');
+
+// References for the second popup
+const openPopup2 = document.getElementById('openPopup2');
+const closePopup2 = document.getElementById('closePopup2');
+const popup2 = document.getElementById('popup2');
+
+// Open the first popup
+openPopup1.addEventListener('click', () => {
+  popup1.style.display = 'flex';
+  popup2.style.display = 'none';
+});
+
+// Close the first popup
+closePopup1.addEventListener('click', () => {
+  popup1.style.display = 'none';
+});
+
+// Open the second popup from the first popup
+openPopup2.addEventListener('click', (e) => {
+  e.preventDefault(); // Prevent default anchor behavior
+  popup1.style.display = 'none'; // Hide the first popup
+  popup2.style.display = 'flex'; // Show the second popup
+});
+
+// Close the second popup
+closePopup2.addEventListener('click', () => {
+  popup2.style.display = 'none';
+});
+
+// Optional: Close popup when clicking outside the content
+[popup1, popup2].forEach((popup) => {
+  popup.addEventListener('click', (e) => {
+    if (e.target === popup) {
+      popup.style.display = 'none';
+    }
+  });
+});
+
+let userPreferences = {{ preference | tojson | safe }};  // Load user preferences from Flask
+
+document.addEventListener("DOMContentLoaded", function () {
+  const clearButton = document.getElementById("clearButton");
+  async function updatePreferencesBulk(items, action) {
+    try {
+        const response = await fetch("/update_preferences_bulk", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ items: items, action: action }),
+        });
+
+        const data = await response.json();
+        console.log(data.message);
+    } catch (error) {
+        console.error("Error:", error);
+    }
+}
+
+// Attach to clear button
+clearButton.addEventListener("click", async function () {
+    let itemsToRemove = [];
+    document.querySelectorAll(".item2.highlight2").forEach(button => {
+        itemsToRemove.push(button.textContent.trim());
+        button.classList.remove("highlight2");
+    });
+
+    if (itemsToRemove.length > 0) {
+        await updatePreferencesBulk(itemsToRemove, "remove");
+        userPreferences = [];  // Clear locally after backend update
+    }
+    window.location.href = "{{ url_for('profile') }}"; 
+});
+
+  // Loop through each item and handle click and highlight logic
+  document.querySelectorAll(".item2").forEach(button => {
+    let itemName = button.textContent.trim();
+
+    // Highlight if preference exists
+    if (userPreferences.includes(itemName)) {
+      button.classList.add("highlight2");
+    }
+
+    // Toggle selection on click
+    button.addEventListener("click", function () {
+      if (button.classList.contains("highlight2")) {
+        button.classList.remove("highlight2");
+        updatePreference(itemName, "remove");
+        // Remove from local preferences array
+        userPreferences = userPreferences.filter(item => item.trim() == itemName);
+      } else {
+        button.classList.add("highlight2");
+        updatePreference(itemName, "add");
+        // Add to local preferences array
+        if (!userPreferences.includes(itemName)) {
+          userPreferences.push(itemName);
+          console.log("Current userPreferences before clearing:", userPreferences);
+
+        }
+      }
+    });
+  });
+});
+
+// Function to update preferences for all items at once
+async function updateAllPreferences(action) {
+  console.log("Current userPreferences:", userPreferences); 
+  for (let itemName of userPreferences) {
+    await updatePreference(itemName, action); // Wait for each fetch to complete
+  }
+}
+
+// Function to update individual preference
+async function updatePreference(item, action) {
+  try {
+    const response = await fetch("/update_preference", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ item: item, action: action }),
+    });
+
+    const data = await response.json();
+    console.log(data.message);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+const confirmButton = document.getElementById("confirmButton");
+confirmButton.addEventListener("click", function () {
+    // Close the popup
+    popup.style.display = 'none';
+    
+    // Reload the page (or redirect to any specific URL)
+    window.location.href = "{{ url_for('profile') }}";   // Or use window.location.href = '/yourpage' if you want a specific route
+  });
+
+</script>

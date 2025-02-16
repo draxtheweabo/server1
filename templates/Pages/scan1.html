@@ -1,0 +1,510 @@
+{% extends "base.html" %}
+{% block title %} Dashboard {% endblock %}
+
+<!-- Element injected in the BODY element -->
+{% block body_class %} sidebar-mini {% endblock body_class %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<link rel="stylesheet" href="/static/assets/plugins/fontawesome-free/css/all.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/jqvmap/jqvmap.min.css">
+<link rel="stylesheet" href="/static/assets/css/adminlte.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/daterangepicker/daterangepicker.css">
+<link rel="stylesheet" href="/static/assets/plugins/summernote/summernote-bs4.min.css">
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="content-wrapper" style="background-color: #D6EFD8;">
+<!--Start Page Header-->
+<div class="content-header">
+<div class="container-fluid">
+<div class="row mb-2">
+</div>
+</div>
+</div>
+<!--End Page Header-->
+
+<!--Start Main content -->
+<section class="content">
+    <h3 style="padding-left: 4%;">Phase 1: Ingredients Scanning</h3>
+<div class="container-fluid">
+<div class="row">
+<div class="col-lg-12">
+<div class="card" style="background-color: #2B7E2A; left: 4%; border: 2px solid #000000; display: flex; justify-content: center;">
+  <!--Start Header-->
+  <div>
+    <button id="tutorial-button" onclick="openTutorial()" aria-label="Help">
+        <img src="static\assets\img\question_icon.png" alt="Help Icon" style="width: 35px; height: 35px;">
+    </button>
+    <p style="font-size: 25px; margin-top: 5%; padding-bottom: 5%; color: white;">Choose an image file to scan ingredients</p>    
+  </div>
+  
+  <!--End Header-->
+<style>
+.slideshow-container {
+width: 100%;
+max-width: 300px;
+margin: auto;
+text-align: center;
+position: relative;
+
+}
+.step-box {
+display: none; /* Hide all step-boxes initially */
+padding: 20px;
+background-color: #D6C0B3;
+border: 1px solid #D6C0B3;
+border-radius: 8px;
+text-align: center;
+}
+.active {
+display: block; /* Show only the active step-box */
+}
+.slideshow-container {
+position: relative;
+width: 100%;
+height: 100%; /* Adjust as needed for the desired slideshow height */
+overflow: hidden;
+border: 4px solid #493628; /* Thicker border with specified color */
+border-radius: 10px;
+}
+
+.step-box {
+display: none; /* Only show the active slide */
+width: 100%;
+height: 100%;
+}
+
+.step-box.active {
+display: block; /* Show only the active step */
+}
+
+.step-image {
+width: 100%;
+height: 100%;
+object-fit: cover; /* Fills container, may crop edges if aspect ratio differs */
+display: block;
+}
+.nav-buttons {
+display: flex;
+justify-content: center; /* Center the buttons together */
+gap: 10px; /* Adjust the spacing between buttons */
+margin-top: 10px;
+}
+.nav-button {
+background-color: #555;
+color: white;
+padding: 8px 12px;
+border: none;
+cursor: pointer;
+border-radius: 5px;
+margin-bottom: 10px;
+}
+.nav-button:disabled {
+background-color: #999;
+cursor: not-allowed;
+}
+.desktop {
+display: block;
+}
+.mobile {
+display: none;
+}
+@media (max-width: 768px) {
+.desktop {
+display: none;
+}
+.mobile {
+display: block;
+
+}
+}
+/* Top-right Question Mark Button */
+#tutorial-button {
+float: right;
+right: 10px;
+background: none;
+border: none;
+padding: 10px;
+cursor: pointer;
+z-index: 1001;
+}
+
+#tutorial-button .questionmark-icon {
+width: 30px; /* Adjust size */
+height: 30px; /* Adjust size */
+fill: #007BFF; /* Default color */
+transition: fill 0.3s ease;
+}
+
+#tutorial-button:hover .questionmark-icon {
+fill: #0056b3; /* Hover color */
+}
+
+/* Modal Styles (unchanged from before) */
+.among {
+display: none; /* Hidden by default */
+position: fixed;
+z-index: 1000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
+display: flex;
+justify-content: center;
+align-items: center; /* Centers the modal vertically */
+}
+
+.among-content {
+background-color: #D6C0B3;
+padding: 20px;
+border-radius: 8px;
+width: 80%;
+max-width: 700px;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Adds a subtle shadow */
+
+/* Center the modal explicitly */
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+}
+
+.close-button {
+position: absolute;
+top: 10px;
+right: 15px;
+font-size: 24px;
+font-weight: bold;
+cursor: pointer;
+}
+.tutorial-header {
+display: flex;
+justify-content: center; /* Centers horizontally */
+align-items: center; /* Centers vertically */
+height: 100px; /* Set the desired height for the header */
+text-align: center; /* Optional: Center-aligns text */
+}
+.card {
+    background-color: #d6d6d6;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    height: 450px;
+    width: 90%;
+    
+  }
+</style>
+  <!--Start Card Body-->
+<div class="card-body">
+<!-- Modal Structure -->
+    <form class="form-signin d-flex flex-column align-items-center" method="post" enctype="multipart/form-data" name="form1">
+      <!-- File Input Styling -->
+      <style>
+       /* Shared button styles */
+      .custom-btn {
+        padding: 10px 20px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        border-radius: 5px;
+        transition: transform 0.2s ease;
+        width: 20%; /* Default width for larger screens */
+        
+      }
+
+      .custom-btn:hover {
+        background-color: rgba(255, 255, 255, 0.521);
+      }
+
+      .default-btn {
+        background-color: white;
+        color: #333; /* Dark text on white background */
+      }
+
+      .selected-btn {
+        background-color: green;
+        color: white;
+        border: 2px solid green;
+      }
+
+      /* Media query for mobile screens (max-width: 768px) */
+      @media (max-width: 768px) {
+        .custom-btn {
+            width: 80%; /* 50% width for smaller screens */
+        }
+      }
+    </style>
+
+        <input type="file" name="file" id="inputfile" style="display:none;" onchange="fileSelected()" >
+        <!-- "Choose a File" button, starts as white -->
+        <button type="button" class="custom-btn btn default-btn mt-2" onclick="document.getElementById('inputfile').click();" id="uploadButton">
+            <span id="uploadText">Upload Image Here</span>
+      </button>
+<script>
+window.onload = function() {
+changeButtonText();
+};
+
+window.onresize = function() {
+changeButtonText();
+};
+
+function changeButtonText() {
+const uploadButton = document.getElementById('uploadButton');
+const uploadText = document.getElementById('uploadText');
+
+if (window.innerWidth <= 768) {  // This is the breakpoint for mobile
+uploadText.textContent = "Upload Image Here";
+document.getElementById('inputfile').setAttribute('capture');
+} else {
+uploadText.textContent = "Upload Image Here";
+document.getElementById('inputfile').removeAttribute('capture');
+}
+}
+</script>
+<body>
+
+<!-- HTML for Error Message -->
+<div id="messageModal">
+    <div class="modal-content">
+        <p id="modalMessage"></p>
+        <button onclick="closeModal()">OK</button>
+    </div>
+</div>
+<!-- CSS for Error Message -->
+<style>
+    /* Modal styling */
+    #messageModal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        width: 300px;
+        text-align: center;
+    }
+    .modal-content button {
+        margin-top: 15px;
+        padding: 5px 15px;
+    }
+</style>
+<!-- Script for Error Message -->
+<script>
+    function showModal(message) {
+        document.getElementById("modalMessage").innerText = message;
+        document.getElementById("messageModal").style.display = "block";
+    }
+
+    function closeModal() {
+        // Hide the modal
+        document.getElementById("messageModal").style.display = "none";
+
+        // Remove the modal element from the DOM to prevent it from showing again
+        let modal = document.getElementById("messageModal");
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    // Show the modal if there's a message from Flask
+    {% if message %}
+    showModal("{{ message }}");
+    {% endif %}
+</script>
+    
+</div>
+  <!--End Card Body-->
+  
+</div>
+</div>
+
+</div>
+</div>
+</section>
+<div style="text-align: center;">
+    <button class="custom-btn btn default-btn mt-2" style="margin-bottom: 20px;" type="submit" id="scanButton" disabled>
+        Scan
+    </button>
+    
+    <script>
+        function fileSelected() {
+            const inputFile = document.getElementById('inputfile');
+            const scanButton = document.getElementById('scanButton');
+            
+            // Enable the "Scan" button if a file is selected
+            if (inputFile.files.length > 0) {
+                scanButton.disabled = false;
+            } else {
+                scanButton.disabled = true;
+            }
+        }
+    </script>
+  </div>
+</form>
+<!--End Main content -->
+</div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE -->
+{% block javascripts %}
+<script>
+  // This function is called when a file is selected
+  function fileSelected() {
+      var fileInput = document.getElementById('inputfile');
+      var uploadButton = document.getElementById('uploadButton');
+
+      if (fileInput.files.length > 0) {
+          // If a file is selected, turn the button green
+          uploadButton.classList.remove('default-btn');
+          uploadButton.classList.add('selected-btn');
+          uploadButton.innerText = "File Selected: " + fileInput.files[0].name;
+      } else {
+          // If no file is selected, keep it white
+          uploadButton.classList.remove('selected-btn');
+          uploadButton.classList.add('default-btn');
+          uploadButton.innerText = "Choose a File";
+      }
+      const inputFile = document.getElementById('inputfile');
+        const scanButton = document.getElementById('scanButton');
+        
+        // Enable the "Scan" button if a file is selected
+        if (inputFile.files.length > 0) {
+            scanButton.disabled = false;
+        } else {
+            scanButton.disabled = true;
+        }
+  }
+</script>
+<script>
+function openTutorial() {
+    // Create the modal content dynamically
+    const modalHTML = `
+        <div id="tutorial-modal" class="among">
+            <div class="among-content">
+                <span class="close-button" onclick="closeTutorial()">&times;</span>
+                <div class="tutorial-header">
+                    <h2 style="text-align: center;">Step by Step Tutorial</h2>
+                </div>        
+                <div class="slideshow-container">
+                    <!-- Desktop Tutorial -->
+                    <div class="desktop">
+                        <div class="step-box active">
+                            <img src="static/assets/img/Step 1.png" alt="Open your camera" class="step-image" />
+                        </div>
+                        <div class="step-box">
+                            <img src="static/assets/img/Step 2.png" alt="Take a photo" class="step-image" />
+                        </div>
+                        <div class="step-box">
+                            <img src="static/assets/img/Step 3.png" alt="Click the Choose a File button" class="step-image" />
+                        </div>
+                        <div class="step-box">
+                            <img src="static/assets/img/Step 4.png" alt="Press the scan button" class="step-image" />
+                        </div>
+                    </div>
+                    <!-- Mobile Tutorial -->
+                    <div class="mobile">
+                        <div class="step-box active">
+                            <img src="static/assets/img/Step 1 - Mobile.png" alt="Open your camera" class="step-image" />
+                        </div>
+                        <div class="step-box">
+                            <img src="static/assets/img/Step 2 - Mobile.png" alt="Take a photo" class="step-image" />
+                        </div>
+                        <div class="step-box">
+                            <img src="static/assets/img/Step 3 - Mobile.png" alt="Click the Choose a File button" class="step-image" />
+                        </div>
+                        <div class="step-box">
+                            <img src="static/assets/img/Step 4 - Mobile.png" alt="Press the scan button" class="step-image" />
+                        </div>
+                        <div class="step-box">
+                            <img src="static/assets/img/Step 5 - Mobile.png" alt="Click the Choose a File button" class="step-image" />
+                        </div>
+                        <div class="step-box">
+                            <img src="static/assets/img/Step 6 - Mobile.png" alt="Press the scan button" class="step-image" />
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="nav-button" onclick="changeSlide(-1)">Previous</button>
+                    <button class="nav-button" onclick="changeSlide(1)">Next</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Append the modal to the body
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    // Display the modal
+    document.getElementById('tutorial-modal').style.display = 'block';
+}
+
+function closeTutorial() {
+    // Remove the modal from the DOM
+    const modal = document.getElementById('tutorial-modal');
+    if (modal) {
+        modal.remove();
+    }
+    currentSlide = 0; // Reset to the first slide
+}
+
+// Slideshow functionality
+let currentSlide = 0;
+
+function showSlide(n, isMobile) {
+    const slides = document.querySelectorAll(isMobile ? '.mobile .step-box' : '.desktop .step-box');
+    slides.forEach((slide, index) => {
+        slide.classList.remove('active');
+        if (index === n) slide.classList.add('active');
+    });
+}
+
+function changeSlide(n) {
+    const isMobile = window.innerWidth <= 768;
+    const slides = document.querySelectorAll(isMobile ? '.mobile .step-box' : '.desktop .step-box');
+    currentSlide += n;
+
+    // Wrap around if reaching the end or beginning
+    if (currentSlide >= slides.length) {
+        currentSlide = 0;
+    } else if (currentSlide < 0) {
+        currentSlide = slides.length - 1;
+    }
+
+    showSlide(currentSlide, isMobile);
+}
+
+</script>
+<script>$.widget.bridge('uibutton', $.ui.button)</script>
+<script src="/static/assets/plugins/jquery/jquery.min.js"></script>
+<script src="/static/assets/plugins/jquery-ui/jquery-ui.min.js"></script>
+<script src="/static/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/static/assets/plugins/chart.js/Chart.min.js"></script>
+<script src="/static/assets/plugins/sparklines/sparkline.js"></script>
+<script src="/static/assets/plugins/jqvmap/jquery.vmap.min.js"></script>
+<script src="/static/assets/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+<script src="/static/assets/plugins/jquery-knob/jquery.knob.min.js"></script>
+<script src="/static/assets/plugins/moment/moment.min.js"></script>
+<script src="/static/assets/plugins/daterangepicker/daterangepicker.js"></script>
+<script src="/static/assets/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<script src="/static/assets/plugins/summernote/summernote-bs4.min.js"></script>
+<script src="/static/assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<script src="/static/assets/js/adminlte.js"></script>
+<script src="/static/assets/js/pages/dashboard.js"></script>
+<script src="/static/assets/js/demo.js"></script>
+{% endblock javascripts %}

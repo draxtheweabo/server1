@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="">
+    <title>RecInScan</title>
+</head>
+<body>
+    <div class="scanner-body-content ">
+            <!-- Back button -->
+            <a class="back-button" href="{{ url_for('result') }}">← Back</a>
+            <section class="section-left">
+            <div class="card" style="background: url('/static/assets/img/bg2.jpg') center/cover no-repeat;">
+              <div class="header-text">Recommended Recipes.</div>
+              <div class="content-box">
+                <ul id="recipe-list" class="list-group">
+                  {% for dish in dishes %}
+                    <li class="list-group-item recipe-item" data-recipe="{{ loop.index0 }}">{{ dish.dish_name }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+            <div class="card2" style=" background: url('/static/assets/img/bg2.jpg') center/cover no-repeat;">
+              <div class="header-text">You may also try:</div>
+              <div class="content-box">
+                <ul id="additional-recipe-list" class="list-group">
+                  {% for additional_dish in matching_dishes %}
+                  {% if additional_dish.dish_name not in dishes|map(attribute='dish_name') %}
+                    <li class="list-group-item recipe-item" data-recipe="{{ loop.index0 }}">{{ additional_dish.dish_name }}</li>
+                  {% endif %}
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+            </form>
+            </section>
+            <section class="section-right">
+            <div class="card3" style=" background: url('/static/assets/img/bg2.jpg') center/cover no-repeat;">
+              <div class="header-text">Recipe Chosen.</div>
+              <div class="content-box" >
+                <div id="recipe-details" class="recipe-details"></div>
+              </div>
+            </div>
+            </section>
+    </div>
+
+<!-- HTML for Error Message -->
+<div id="messageModal">
+    <div class="modal-content">
+        <p id="modalMessage"></p>
+        <button onclick="closeModal()">OK</button>
+    </div>
+</div>
+<!-- CSS for Error Message -->
+<style>
+    /* Modal styling */
+    #messageModal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        width: 300px;
+        text-align: center;
+    }
+    .modal-content button {
+        margin-top: 15px;
+        padding: 5px 15px;
+    }
+</style>
+<!-- Script for Error Message -->
+<script>
+ function showModal(message) {
+    let modal = document.getElementById("messageModal");
+    let modalMessage = document.getElementById("modalMessage");
+
+    if (!modal || !modalMessage) {
+        console.error("Modal elements not found!");
+        return;
+    }
+
+    modalMessage.innerText = message;
+    modal.style.display = "block";
+}
+
+function closeModal() {
+    document.getElementById("messageModal").style.display = "none";
+}
+
+// Show the modal if there's a message from Flask
+document.addEventListener("DOMContentLoaded", function () {
+    {% if message %}
+    showModal("{{ message }}");
+    {% endif %}
+});
+
+</script>
+    <div class="nav-bar">
+      <a class="nav-link" href="{{ url_for('about') }}"><img src="static/assets/icons/Feedback.png" height="25px"><div>About</div></a>
+      <a class="nav-link" href="{{ url_for('chat') }}"><img src="static/assets/icons/speech_bubble.png" height="25px"><div>AI Chat</div></a>
+      <a class="nav-link" href="{{ url_for('home') }}"><img src="static/assets/icons/homePicked.png" height="25px"><div class="navSelect">Home</div></a>
+      <a class="nav-link" href="{{ url_for('recipes') }}"><img src="static/assets/icons/recipes.png" height="25px"><div>Recipes</div></a>
+      <a class="nav-link" href="{{ url_for('profile') }}"><img src="static/assets/icons/profile.png" height="25px"><div>Profile</div></a>
+    </div>
+</body>
+</html>
+
+<script>
+  const recipes = {{ dishes|tojson }};
+  const additionalRecipes = {{ matching_dishes|tojson }};
+  const enteredIngredients = {{ ingredients|tojson }};
+  const isMobile = window.innerWidth <= 768;
+  // Handle recipe list click for 'Pick a Recipe'
+  document.querySelectorAll('.recipe-item').forEach(item => {
+  item.addEventListener('click', function() {
+      const recipeIndex = this.getAttribute('data-recipe');
+      const recipe = recipes[recipeIndex] || additionalRecipes[recipeIndex];
+  
+      // Function to process and style ingredients
+      const processIngredients = (ingredientCategory, label) => {
+          const processedIngredients = recipe.ingredients[ingredientCategory].map(ing => {
+              const measurement = `<span style="color:white;">${ing.measurement}</span>`;
+              const ingredientNames = ing.name.split(/\s+and\s+/); // Split by "and"
+              const coloredIngredients = ingredientNames.map(ingredientName => {
+                  const ingredientNameLower = ingredientName.toLowerCase(); // Case-insensitive
+                  const color = enteredIngredients.some(ing => ingredientNameLower.includes(ing)) ? '#f5f5f5' : 'red';
+                  return `<span style="color:${color}">${ingredientName}</span>`;
+              }).join(' and '); // Join back with "and" if needed
+              return `<li style='list-style: none;'>${measurement} ${coloredIngredients}</li>`;
+          }).join('');
+  
+          return `<h6>${label}:</h6><ul style='margin-left: 20px'>${processedIngredients}</ul>`;
+      };
+  
+      // Generate ingredient lists for each category
+      const mainIngredients = processIngredients('main', 'Main Ingredients');
+      const secondaryIngredients = processIngredients('secondary', 'Secondary Ingredients');
+      const commonIngredients = processIngredients('common', 'Common Ingredients');
+  
+      // Combine all ingredient sections
+      const ingredientList = `${mainIngredients}${secondaryIngredients}${commonIngredients}`;
+      // Recipe details with categorized ingredients
+      const recipeDetails = `
+      <h4 style'text-align: center;'>${recipe.dish_name}</h4>
+      <div style="display: flex; justify-content: center;">
+          <img src="${recipe.image}" alt="${recipe.dish_name}" 
+              style="width: ${isMobile ? '100%' : '50%'}; 
+                      height: ${isMobile ? '100%' : '50%'}; 
+                      margin-bottom: 15px;">
+      </div>
+      <p><strong>Author:</strong> ${recipe.author}</p>
+      <p><strong>Serving:</strong> ${recipe.serving}</p>
+      <p><strong>Cooking Time:</strong> ${recipe.cook_time} minutes</p>
+      <p><strong>Link:</strong> <a href="${recipe.link}" target="_blank">${recipe.link}</a></p>
+      
+      <h5>Ingredients:</h5>
+      <p style'color: white;'>${ingredientList}</p>
+  
+      <h5>Procedure:</h5>
+      <p>${recipe.instructions.join('<br>')}</p>
+  
+      <!-- Form for submitting the selected dish (handled via JavaScript) -->
+      <form id="historyForm">
+          <input type="hidden" name="user_id" value="{{ current_user_id }}">
+          <input type="hidden" name="dish_name" value = "${recipe.dish_name} " >
+          <input type="hidden" name="date" value="{{ currentDate }}">
+          <input type="hidden" name="ingredients" id="greenIngredients">
+          
+          <button type="button" class="scanner-button" onclick="submitHistory()">
+              Try This Dish
+          </button>
+      </form>
+  
+      <p id="successMessage" style="color: green; display: none;">Dish added to history!</p>
+  `;
+      document.getElementById('recipe-details').innerHTML = recipeDetails;
+      });
+  });
+  
+  function submitHistory() {
+    let greenIngredients = [];
+
+    // Get only the green-colored ingredients
+    document.querySelectorAll('#recipe-details span[style*="color:#f5f5f5"]').forEach(span => {
+        greenIngredients.push(span.textContent.trim());
+    });
+
+    // Prepare form data
+    let formData = {
+        user_id: document.querySelector("input[name='user_id']").value,
+        dish_name: document.querySelector("input[name='dish_name']").value,
+        date: new Date().toISOString().split("T")[0], // Get today's date in YYYY-MM-DD format
+        ingredients: greenIngredients.join(", ")
+    };
+
+    console.log("Submitting dish:", formData.dish_name);
+
+    // Send data via AJAX (Fetch API)
+    fetch("/add_to_history", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showModal(data.message);
+        } else {
+            showModal("⚠️ " + (data.error || "This dish has already been added today."));
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        showModal("❌ An unexpected error occurred. Please try again.");
+    });
+}
+
+</script>
+
+<style>
+  /* CSS for slide-down effect */
+  .slide-down {
+      animation: slideDown 0.5s ease-in-out forwards;
+  }
+
+  /* Keyframes for slide-down animation */
+  @keyframes slideDown {
+      from {
+          opacity: 0;
+          transform: translateY(-20px); /* Start slightly above */
+      }
+      to {
+          opacity: 1;
+          transform: translateY(0); /* End at normal position */
+      }
+  }
+
+  /* Ensure images are initially hidden */
+  .hidden {
+      display: none;
+      opacity: 0;
+  }
+  .text-start {
+text-align: left;
+}
+</style>
+
+<style>
+.list-group-item {
+    background-color: #f8f9fa; /* Light gray background */
+    border: 1px solid #dee2e6; /* Soft border */
+    padding: 10px 15px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333; /* Dark text */
+    transition: background-color 0.3s ease-in-out;
+    list-style: none;
+    margin-bottom: 10px;
+
+}
+
+.list-group-item:hover {
+    background-color: #e9ecef; /* Slightly darker on hover */
+    cursor: pointer;
+}
+
+.recipe-item {
+    border-radius: 5px;
+}
+</style>
+
+<style>
+.card * {
+  position: relative;
+  z-index: 1;
+}
+.card2 * {
+  position: relative;
+  z-index: 1;
+}
+.card3 * {
+  position: relative;
+  z-index: 1;
+}
+.scanner-body-content {
+  display: flex;
+  justify-content: space-between; /* Pushes sections apart */
+  width: 100%;
+}
+.section-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Aligns items to the left */
+  width: 45%; /* Takes up half the width */
+  margin-left: 30px;
+  margin-top: 70px;
+  margin-bottom: 60px;
+}
+.section-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 50%; /* Adjust width to balance with left */
+  margin-right: 30px;
+  margin-top: 70px;
+}
+.card2{
+max-height: 530px;
+}
+.card, .card2 {
+  color: white;
+  width: 100%; /* Ensures both cards take up the full width of the section */
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  padding-top: 10px;
+  overflow: hidden;
+  margin-top: 20px;
+  padding-bottom: 40px;
+}
+
+.card3 {
+  color: white;
+  width: 100%; /* Ensures both cards take up the full width of the section */
+  padding-top: 10px;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  overflow: hidden;
+  max-height: 750px;
+  margin-top: 20px;
+  padding-bottom: 40px;
+}
+/* === Responsive Design for Mobile (Stacking Sections) === */
+@media (max-width: 768px) {
+  .scanner-body-content {
+    flex-direction: column; /* Stack sections vertically */
+    align-items: center;
+  }
+  .card,.card2,.card3{
+    max-height: 500px;
+    overflow: scroll;
+    padding-bottom: 0;
+  }
+
+  .section-right {
+    width: 90%; /* Full width on small screens */
+    height: 40%;
+    margin-right: 0;
+    margin-bottom: 0;
+    order: 1; /* Right section appears on top */
+  }
+
+  .section-left {
+    height: 40%;
+    width: 90%; /* Full width on small screens */
+    margin-left: 0;
+    margin-top: 10px;
+    order: 2; /* Left section appears below */
+    margin-bottom: 60px;
+  }
+}
+/* Dark overlay applied only to the background */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Adjust opacity here */
+  border-radius: 12px;
+  z-index: 0; /* Behind text */
+}
+/* Dark overlay applied only to the background */
+.card2::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Adjust opacity here */
+  border-radius: 12px;
+  z-index: 0; /* Behind text */
+}
+.card3::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Adjust opacity here */
+  border-radius: 12px;
+  z-index: 0; /* Behind text */
+}
+
+.card3 .header-text {
+  font-size: 24px;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.card3 .header-subtext {
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+
+.card2 .header-text {
+  font-size: 24px;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.card2 .header-subtext {
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+
+.card .header-text {
+  font-size: 24px;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.card .header-subtext {
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+.content-box {
+  overflow: auto;
+  padding-left: 50px;
+  background: rgba(0, 128, 0, 1);
+  padding: 15px;
+  border-radius: 8px;
+  height: 100%;
+  margin-top: 10px;
+  padding-top: 20px;
+}
+
+.custom-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background: white;
+  color: green;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.custom-button:hover {
+  background: lightgreen;
+}
+
+
+</style>
+
+<style>
+  /* Import Livvic font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Livvic:wght@400;700&display=swap');
+
+/* Reset Default Margins and Padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* General Body Styling */
+html, body {
+    font-family: 'Livvic', Arial, sans-serif;
+    background-color: #E8FFEA;
+    color: #333;
+    height: 100%;
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+/* Container for Content */
+.container {
+    width: 100%;
+    max-width: 400px; /* Limits width for readability */
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .container {
+        padding: 15px;
+    }
+
+    .button {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
+/* Bottom Navigation Bar */
+.nav-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #E8FFEA;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0;
+    border-top: 2px solid #ddd;
+    box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    padding: 10px 0; /* Adjust padding as needed */
+    height: 60px; /* Set a fixed height */
+}
+
+/* Navigation Links on the bottom of the page.. */
+.nav-link {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    font-size: 10px;
+    color: #333;
+    text-decoration: none;
+    transition: 0.3s;
+    font-weight: bold;
+}
+
+.navSelect {
+    color: #2B7E2A;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.nav-link a {
+    height: 100%;
+}
+
+/* Hover & Active Effects */
+.nav-link:hover {
+    background: #f0f0f0;
+}
+
+.nav-link:active {
+    color: #007bff;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+    .nav-link {
+        font-size: 12px;
+        padding: 8px;
+    }
+}
+
+/* Full header part */
+.body-content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+    top: 0;
+    z-index: 990;
+    margin: 0;
+}
+
+/* header part */
+.header {
+    background-color: #000000;
+    padding: 13px;
+    width: 100%;
+    color: white;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 24px;
+    color: white;
+}
+
+/* profile header part */
+.profileheader {
+    display: flex;
+    flex-direction:row;
+    background-color: #2B7E2A;
+    padding: 13px;
+    width: 100%;
+    color: white;
+    height: 100px;
+    justify-content: center;
+}
+
+.main-content h3 {
+    margin-top: 10px;
+}
+
+.main-content h4 {
+    text-align: left; 
+    padding-left: 20px; 
+    margin-top: 10px;
+}
+
+.swiper-wrapper {
+    font-size: 12px;
+
+}
+
+.swiper-slide a {
+    text-decoration: none;
+    color: #333;
+
+}
+
+.profileheader a {
+    color: white;
+    font-weight: bold;
+}
+.profile-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 auto;
+    width: 100%;
+
+}
+
+.profileheader h1 {
+    margin: 0;
+    font-size: 24px;
+    color: white;
+}
+
+
+/* Meal plan part */
+.meal-plan {
+    background-color: #2B7E2A;
+    padding: 10px 0;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+    width: 100%;
+    color: white;
+    margin: 0;
+}
+
+.calendar {
+    position: relative;
+    max-width: 100%;
+    margin: auto;
+}
+
+.current-day {
+    text-align: center;
+    padding: 20px;
+}
+
+.today-label {
+    font-size: 16px;
+    color: red;
+    margin-bottom: 5px;
+}
+
+.date-square {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    background-color: white;
+    color: #333;
+    border: 2px solid #333;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 10px;
+}
+
+img {
+    vertical-align: middle;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    width: auto;
+    padding: 16px;
+    margin-top: -22px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    transition: 0.6s ease;
+    user-select: none;
+}
+
+.prev {
+    left: 0;
+}
+
+.next {
+    right: 0;
+}
+
+/* Add a background color to the buttons on hover */
+.prev:hover, .next:hover {
+    background-color: rgba(0,0,0,0.8);
+}
+
+.main-content {
+    text-align: center;
+    padding-bottom: 60px; /* Ensure content is not hidden behind the nav-bar */
+}
+
+/* Swiper container */
+.swiper-container {
+    width: 100%;
+    overflow-x: scroll;
+    display: flex;
+    padding: 10px 0;
+}
+
+.swiper-wrapper {
+    display: flex;
+}
+
+.swiper-slide {
+    min-width: 150px;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.swiper-slide img {
+    width: 100%;
+}
+
+/* recipes page */
+.recipe-main-content {
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid #333;
+    padding: 10px 0;
+}
+.recipe-main-content a {
+    width: 100%;
+    text-decoration: none;
+}
+.recipe-link {
+    display: flex;
+    flex-direction: row;
+}
+
+.recipe-link p, .recipe-link h3 {
+    color: #333;
+}
+
+.recipe-navbar a {
+    text-decoration: none;
+}
+
+/* Circular nav link */
+.circle-nav-link {
+    position: fixed;
+    bottom: 80px; /* Adjust based on the height of the nav-bar */
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: #2B7E2A;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    z-index: 1001;
+    border: 1px solid white;
+}
+
+.circle-nav-link img {
+    width: 30px;
+    height: 30px;
+}
+
+/* Hover effect for circular nav link */
+.circle-nav-link:hover {
+    background-color: #256a24;
+}
+
+/* Back button on scanner*/
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #2B7E2A;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.back-button:hover {
+    background-color: #256a24;
+}
+
+/* Scanner buttons */
+.scanner-button {
+    background-color: #2B7E2A;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    border: 2px solid white; /* Added white border */
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+
+.scanner-button:hover {
+    background-color: #256a24;
+}
+
+.camera-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.camera-container p {
+    margin-top: 40px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.textbox-input {
+    display: flex;
+    font-size: 14px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: space-evenly;
+    position: fixed;
+    bottom: 70px;
+    width: 100%;
+}
+
+.input-button {
+    background-color: #2B7E2A;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    border: none;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.input-button:hover {
+    background-color: #256a24;
+}
+
+.scanned-content {
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.scanned-image {
+    display: flex;
+
+}
+
+.scanned-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.ingredient-list-scanned {
+    border-top: 1px solid black;
+    width: 100%;
+}
+
+.ingredients-list-content {
+    display: flex;
+    width: 100%;
+    border-bottom: 1px solid #333;
+    padding: 10px 0;
+}
+
+.ingredient-link {
+    display: flex;
+    flex-direction: row;
+}
+.centering {
+    text-align: center;
+}
+</style>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/assets/styles.css">
+    <title>RecInScan</title>
+</head>
+<body>
+    <div class="scanner-body-content">
+        <div class="scanner-content">
+            <!-- Back button -->
+            <a class="back-button" href="{{ url_for('home') }}">← Back</a>
+            <!-- Camera plugin -->
+            <div class="camera-container">
+                <div>
+                </div>
+                <div class="button-container">
+                    <form class="button-container" method="post" enctype="multipart/form-data" name="form1">
+                        <div class="card" style="background: url('/static/assets/img/bg2.jpg') center/cover no-repeat; padding-top: 25px;">
+                            <div class="header-text" style="margin-left: 20px;">Scan for ingredients.</div>
+                            <div class="content-box">
+                                <input type="file" name="file" id="inputfile" style="display:none;" onchange="fileSelected()" >
+                                <!-- "Choose a File" button, starts as white -->
+                                <button type="button" class="scanner-button" style="width: 40%;" onclick="document.getElementById('inputfile').click();" id="uploadButton">
+                                    <span id="uploadText">Upload Image Here</span>
+                                </button>
+                                </br>
+                                <button class="scanner-button" type="submit" id="scanButton" style="width: 40%;" disabled>
+                                    Scan
+                                </button>
+                                <!-- <canvas id="canvas" style="display:none;"></canvas> -->
+                                <script>
+                                    window.onload = function() {
+                                    changeButtonText();
+                                    };
+                                    
+                                    window.onresize = function() {
+                                    changeButtonText();
+                                    };
+                                    
+                                    function changeButtonText() {
+                                    const uploadButton = document.getElementById('uploadButton');
+                                    const uploadText = document.getElementById('uploadText');
+                                    
+                                    if (window.innerWidth <= 768) {  // This is the breakpoint for mobile
+                                    uploadText.textContent = "Upload Image Here";
+                                    document.getElementById('inputfile').setAttribute('capture');
+                                    } else {
+                                    uploadText.textContent = "Upload Image Here";
+                                    document.getElementById('inputfile').removeAttribute('capture');
+                                    }
+                                    }
+                                </script>
+                                <script>
+                                    function fileSelected() {
+                                        const inputFile = document.getElementById('inputfile');
+                                        const scanButton = document.getElementById('scanButton');
+                                        
+                                        // Enable the "Scan" button if a file is selected
+                                        if (inputFile.files.length > 0) {
+                                            scanButton.disabled = false;
+                                        } else {
+                                            scanButton.disabled = true;
+                                        }
+                                    }
+                                </script>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>   
+    
+    <div class="nav-bar">
+        <a class="nav-link" href="{{ url_for('about') }}"><img src="static/assets/icons/Feedback.png" height="25px"><div>About</div></a>
+        <a class="nav-link" href="{{ url_for('chat') }}"><img src="static/assets/icons/speech_bubble.png" height="25px"><div>AI Chat</div></a>
+        <a class="nav-link" href="{{ url_for('home') }}"><img src="static/assets/icons/homePicked.png" height="25px"><div class="navSelect">Home</div></a>
+        <a class="nav-link" href="{{ url_for('recipes') }}"><img src="static/assets/icons/recipes.png" height="25px"><div>Recipes</div></a>
+        <a class="nav-link" href="{{ url_for('profile') }}"><img src="static/assets/icons/profile.png" height="25px"><div>Profile</div></a>
+    </div>
+</body>
+</html>
+<!-- HTML for Error Message -->
+<div id="messageModal">
+    <div class="modal-content">
+        <p id="modalMessage"></p>
+        <button class="scanner-button" onclick="closeModal()">OK</button>
+    </div>
+</div>
+<!-- CSS for Error Message -->
+<style>
+    /* Modal styling */
+    #messageModal {
+        display: none;
+        position: fixed;
+        z-index: 999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        width: 300px;
+        text-align: center;
+    }
+    .modal-content button {
+        margin-top: 15px;
+        padding: 5px 15px;
+    }
+</style>
+<!-- Script for Error Message -->
+<script>
+    function showModal(message) {
+        document.getElementById("modalMessage").innerText = message;
+        document.getElementById("messageModal").style.display = "block";
+    }
+
+    function closeModal() {
+        // Hide the modal
+        document.getElementById("messageModal").style.display = "none";
+
+        // Remove the modal element from the DOM to prevent it from showing again
+        let modal = document.getElementById("messageModal");
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    // Show the modal if there's a message from Flask
+    {% if message %}
+    showModal("{{ message }}");
+    {% endif %}
+</script>
+
+<script>
+// This function is called when a file is selected
+function fileSelected() {
+    var fileInput = document.getElementById('inputfile');
+    var uploadButton = document.getElementById('uploadButton');
+
+    if (fileInput.files.length > 0) {
+        // If a file is selected, turn the button green
+        uploadButton.classList.remove('default-btn');
+        uploadButton.classList.add('selected-btn');
+        uploadButton.innerText = "File Selected: " + fileInput.files[0].name;
+    } else {
+        // If no file is selected, keep it white
+        uploadButton.classList.remove('selected-btn');
+        uploadButton.classList.add('default-btn');
+        uploadButton.innerText = "Choose a File";
+    }
+    const inputFile = document.getElementById('inputfile');
+        const scanButton = document.getElementById('scanButton');
+        
+        // Enable the "Scan" button if a file is selected
+        if (inputFile.files.length > 0) {
+            scanButton.disabled = false;
+        } else {
+            scanButton.disabled = true;
+        }
+}
+</script>
+<style>
+.card * {
+    position: relative;
+    z-index: 1;
+}
+.card {
+    color: white;
+    width: 70dvw;
+    height: 70dvh;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    overflow: hidden;
+    padding-top: 10px;
+}
+
+/* Dark overlay applied only to the background */
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Adjust opacity here */
+    border-radius: 12px;
+    z-index: 0; /* Behind text */
+    
+}
+
+.card .header-text {
+    font-size: 24px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.card .header-subtext {
+    font-size: 14px;
+    margin: 10px 0;
+}
+
+.content-box {
+    text-align: center;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    background: rgba(0, 128, 0, 1);
+    padding: 15px;
+    border-radius: 8px;
+    height: 100%;
+    margin-top: 10px;
+    padding-top: 200px;
+}
+
+.custom-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background: white;
+    color: green;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.custom-button:hover {
+    background: lightgreen;
+}
+
+@media (max-width: 768px) {
+    .card {
+        width: 90dvw;
+    }
+    .content-box {
+        padding-top: 120px;
+    }
+}
+</style>

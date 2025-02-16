@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="">
+    <title>RecInScan</title>
+</head>
+<body>
+    <div class="scanner-body-content ">
+            <!-- Back button -->
+            <a class="back-button" href="{{ url_for('scan') }}">← Back</a>
+            <section class="section-left">
+            <div class="card" style="background: url('/static/assets/img/bg2.jpg') center/cover no-repeat; padding-top: 25px;">
+              <div class="header-text" style="margin-left: 20px;">Scanned Ingredients.</div>
+              <div class="content-box">
+                <form id="uploadForm" method="post" enctype="multipart/form-data">
+                  <input type="hidden" id="hiddenIngredients" name="ingredients">
+                  <!-- Scanned ingredients displayed in textboxes -->
+                  <div id="ingredientsContainer">
+                    {% if ingredients %}
+                      {% for ingredient in ingredients %}
+                        <input type="text" class="form-control mb-2 ingredient-input" value="{{ ingredient }}" />
+                      {% endfor %}
+                    {% else %}
+                      <input type="text" class="form-control mb-2" placeholder="No ingredients detected." disabled />
+                    {% endif %}
+                  </br>
+                  </div>
+                  <button type="button" class="scanner-button" onclick="addManual()">+Add New Ingredients</button>
+                  <button type="button" class="scanner-button" style="margin-bottom: 30px;" onclick="recommendDish()">Recommend Dish</button>
+                </div>
+            </div>
+            <div class="card2" style=" background: url('/static/assets/img/bg2.jpg') center/cover no-repeat; padding-top: 25px;">
+              <div class="header-text" style="margin-left: 20px;">Add Images.</div>
+              <div class="content-box">
+                <div class="button-container">
+                  <input type="file" name="file" id="inputfile" style="display:none;" onchange="fileSelected()">
+                  <!-- "Choose a File" button, starts as white -->
+                  <button type="button" class="scanner-button" style="margin-top: 40px;" onclick="document.getElementById('inputfile').click();" id="uploadButton">
+                    <span id="uploadText">Choose an Image Here</span>
+                  </button>
+                  <script>
+                    window.onload = function() {
+                    changeButtonText();
+                    };
+                    
+                    window.onresize = function() {
+                    changeButtonText();
+                    };
+                    
+                    function changeButtonText() {
+                    const uploadButton = document.getElementById('uploadButton');
+                    const uploadText = document.getElementById('uploadText');
+                    
+                    if (window.innerWidth <= 768) {  // This is the breakpoint for mobile
+                    uploadText.textContent = "Upload Image Using Camera";
+                    document.getElementById('inputfile').setAttribute('capture', 'camera');
+                    } else {
+                    uploadText.textContent = "Choose an Image Here";
+                    document.getElementById('inputfile').removeAttribute('capture');
+                    }
+                    }
+                    </script>
+                  <button type="button" class="scanner-button" id="scanImageButton" onclick="scanImage()">Scan Image</button>
+                </div>
+                <input type="file" id="hiddenFileInput" style="display: none;">
+              </div>
+            </div>
+            </form>
+            </section>
+            <section class="section-right">
+            <div class="card3" style=" background: url('/static/assets/img/bg2.jpg') center/cover no-repeat; padding-top: 25px;">
+              <div class="header-text" style="margin-left: 20px;">Images Scanned.</div>
+              <div class="content-box" >
+
+                  {% for image_path in scanned_image_paths %}
+                  <div>
+                      <!-- Button that toggles the visibility of the image -->
+                      
+                      <!-- Image container, initially hidden -->
+                      <img id="image-{{ loop.index }}" src="{{ image_path }}" alt="Scanned Image {{ loop.index }}" class="hidden" style="width:100%; height: 50%; margin-bottom: 15px; margin-top: 15px; object-fit:contain;">
+                      <button style="margin-bottom: 30px;" class="scanner-button" onclick="toggleImage('{{ loop.index }}')">Show Scanned Image {{ loop.index }}</button>
+                    </div>
+                  {% endfor %}
+              </div>
+            </div>
+            </section>
+    </div>   
+    
+    <div class="nav-bar">
+      <a class="nav-link" href="{{ url_for('about') }}"><img src="static/assets/icons/Feedback.png" height="25px"><div>About</div></a>
+      <a class="nav-link" href="{{ url_for('chat') }}"><img src="static/assets/icons/speech_bubble.png" height="25px"><div>AI Chat</div></a>
+      <a class="nav-link" href="{{ url_for('home') }}"><img src="static/assets/icons/homePicked.png" height="25px"><div class="navSelect">Home</div></a>
+      <a class="nav-link" href="{{ url_for('recipes') }}"><img src="static/assets/icons/recipes.png" height="25px"><div>Recipes</div></a>
+      <a class="nav-link" href="{{ url_for('profile') }}"><img src="static/assets/icons/profile.png" height="25px"><div>Profile</div></a>
+    </div>
+</body>
+</html>
+
+<!-- HTML for Error Message -->
+<div id="messageModal">
+  <div class="modal-content">
+      <p id="modalMessage"></p>
+      <button class="scanner-button" onclick="closeModal()">OK</button>
+  </div>
+</div>
+<!-- CSS for Error Message -->
+<style>
+  /* Modal styling */
+  #messageModal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+  }
+  .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      width: 300px;
+      text-align: center;
+  }
+  .modal-content button {
+      margin-top: 15px;
+      padding: 5px 15px;
+  }
+</style>
+<!-- Script for Error Message -->
+<script>
+  function showModal(message) {
+      document.getElementById("modalMessage").innerText = message;
+      document.getElementById("messageModal").style.display = "block";
+  }
+
+  function closeModal() {
+      // Hide the modal
+      document.getElementById("messageModal").style.display = "none";
+
+      // Remove the modal element from the DOM to prevent it from showing again
+      let modal = document.getElementById("messageModal");
+      if (modal) {
+          modal.remove();
+      }
+  }
+
+  // Show the modal if there's a message from Flask
+  {% if message %}
+  showModal("{{ message }}");
+  {% endif %}
+</script>
+
+<script>
+  function scanImage() {
+    const uploadForm = document.getElementById("uploadForm");
+    uploadForm.action = "/ScanAgain";  // Set action for scanning ingredients
+    uploadForm.submit();  // Submits the form to scan the image
+  }
+
+  function recommendDish() {
+    const uploadForm = document.getElementById("uploadForm");
+    uploadForm.action = "/Recommend";  // Set action for recommending dishes
+    uploadForm.submit();  // Submits the form to recommend dishes
+  }
+</script>
+<script>
+  // Function to toggle the image visibility and apply fade-in animation
+  function toggleImage(index) {
+      var img = document.getElementById('image-' + index);
+      var button = document.getElementById('button-' + index);
+
+      if (img.classList.contains('hidden')) {
+          // Show the image with fade-in effect
+          img.classList.remove('hidden');
+          img.classList.add('slide-down');  // Trigger the fade-in animation
+          button.textContent = 'Hide Scanned Image ' + index;  // Update button text
+      } else {
+          // Hide the image
+          img.classList.add('hidden');
+          img.classList.remove('slide-down');  // Remove fade-in to reset animation for next show
+          button.textContent = 'Show Scanned Image ' + index;  // Update button text
+      }
+  }
+</script>
+<script>
+  function submitImage() {
+      const uploadForm = document.getElementById("uploadForm");
+      uploadForm.submit(); // Submits the form
+      }
+      function addManual() {
+    // Get the container and count existing input fields
+    const ingredientsContainer = document.getElementById("ingredientsContainer");
+    const inputFields = ingredientsContainer.getElementsByClassName("ingredient-input");
+
+    // Check if there are already 10 input fields
+    if (inputFields.length >= 10) {
+        alert("You can only add up to 10 ingredients!");
+        return; // Stop execution if limit is reached
+    }
+
+    // Create a new input field element
+    const newIngredientInput = document.createElement("input");
+
+    // Set the type and class for the new input
+    newIngredientInput.type = "text";
+    newIngredientInput.className = "form-control mb-2 ingredient-input";
+    newIngredientInput.placeholder = "Enter new ingredient"; // Placeholder text
+
+    // Add an event listener to allow only letters
+    newIngredientInput.addEventListener("keypress", function (event) {
+        const char = String.fromCharCode(event.which); // Get the character of the key pressed
+        if (!/[a-zA-Z\s]/.test(char)) { // Check if it's not a letter or space
+            event.preventDefault(); // Prevent the default behavior (input)
+        }
+    });
+
+    // Append the new input field to the container
+    ingredientsContainer.appendChild(newIngredientInput);
+}
+
+  function uploadFile() {
+      // Logic to handle file upload
+      console.log("Upload file functionality to be implemented.");
+      // Add your code to handle file upload
+  }
+</script>
+<script>
+  // This function is called when a file is selected
+  function fileSelected() {
+      var fileInput = document.getElementById('inputfile');
+      var uploadButton = document.getElementById('uploadButton');
+
+      if (fileInput.files.length > 0) {
+          // If a file is selected, turn the button green
+          uploadButton.classList.remove('default-btn');
+          uploadButton.classList.add('selected-btn');
+          uploadButton.innerText = "File Selected: " + fileInput.files[0].name;
+      } else {
+          // If no file is selected, keep it white
+          uploadButton.classList.remove('selected-btn');
+          uploadButton.classList.add('default-btn');
+          uploadButton.innerText = "Choose a File";
+      }
+  }
+</script>
+<script>
+  function recommendDish() {
+    // Collect ingredients from the textboxes
+    const ingredientInputs = document.querySelectorAll('.ingredient-input');
+    const ingredients = [];
+
+    ingredientInputs.forEach(function(input) {
+      if (input.value.trim() !== '') {
+        ingredients.push(input.value.trim());
+      }
+    });
+
+    // Place the collected ingredients into the hidden field
+    document.getElementById('hiddenIngredients').value = ingredients.join(',');
+
+    // Submit the form to the backend for dish recommendations
+    const uploadForm = document.getElementById("uploadForm");
+    uploadForm.action = "/Recommend";  // Set the action to recommend dishes
+    uploadForm.submit();  // Submit the form
+  }
+</script>
+
+
+<style>
+  /* CSS for slide-down effect */
+  .slide-down {
+      animation: slideDown 0.5s ease-in-out forwards;
+  }
+
+  /* Keyframes for slide-down animation */
+  @keyframes slideDown {
+      from {
+          opacity: 0;
+          transform: translateY(-20px); /* Start slightly above */
+      }
+      to {
+          opacity: 1;
+          transform: translateY(0); /* End at normal position */
+      }
+  }
+
+  /* Ensure images are initially hidden */
+  .hidden {
+      display: none;
+      opacity: 0;
+  }
+  .text-start {
+text-align: left;
+}
+</style>
+
+<style>
+.ingredient-input {
+  width: 100%; /* Makes it stretch to full container width */
+  max-width: 500px; /* Adjust width as needed */
+  padding: 12px 20px; /* Comfortable padding */
+  font-size: 16px; /* Readable text */
+  border: 2px solid #ccc; /* Subtle border */
+  border-radius: 25px; /* Rounded edges */
+  background-color: white; /* Clean white background */
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+  outline: none; /* Removes default focus outline */
+  transition: all 0.3s ease-in-out;
+  margin-bottom: 10px;
+}
+
+.ingredient-input:focus {
+  border-color: #6c63ff; /* Highlight on focus */
+  box-shadow: 2px 2px 15px rgba(108, 99, 255, 0.3); /* Glow effect */
+}
+</style>
+
+<style>
+.card * {
+  position: relative;
+  z-index: 1;
+}
+.card2 * {
+  position: relative;
+  z-index: 1;
+}
+.card3 * {
+  position: relative;
+  z-index: 1;
+}
+.scanner-body-content {
+  display: flex;
+  justify-content: space-between; /* Pushes sections apart */
+  width: 100%;
+}
+.section-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Aligns items to the left */
+  width: 45%; /* Takes up half the width */
+  margin-left: 30px;
+  margin-top: 70px;
+  margin-bottom: 60px;
+}
+.section-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 50%; /* Adjust width to balance with left */
+  margin-right: 30px;
+  margin-top: 70px;
+}
+.card{
+max-height: 432px;
+}
+.card, .card2 {
+  color: white;
+  width: 100%; /* Ensures both cards take up the full width of the section */
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  padding-top: 10px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.card3 {
+  color: white;
+  width: 100%; /* Ensures both cards take up the full width of the section */
+  padding-top: 10px;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  overflow: hidden;
+  max-height: 750px;
+  margin-top: 20px;
+}
+/* === Responsive Design for Mobile (Stacking Sections) === */
+@media (max-width: 768px) {
+  .scanner-body-content {
+    flex-direction: column; /* Stack sections vertically */
+    align-items: center;
+  }
+  .card,.card2{
+    max-height: 500px;
+    overflow: scroll;
+  }
+  .card3{
+    overflow: visible;
+    margin-bottom: 100px;
+  }
+
+
+  .section-right {
+    width: 90%; /* Full width on small screens */
+    margin-right: 0;
+    order: 1; /* Right section appears on top */
+    margin-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .section-left {
+    height: 40%;
+    width: 90%; /* Full width on small screens */
+    margin-left: 0;
+    order: 0; /* Left section appears below */
+    margin-bottom: 0;
+  }
+}
+/* Dark overlay applied only to the background */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Adjust opacity here */
+  border-radius: 12px;
+  z-index: 0; /* Behind text */
+}
+/* Dark overlay applied only to the background */
+.card2::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Adjust opacity here */
+  border-radius: 12px;
+  z-index: 0; /* Behind text */
+}
+.card3::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Adjust opacity here */
+  border-radius: 12px;
+  z-index: 0; /* Behind text */
+}
+
+.card3 .header-text {
+  font-size: 24px;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.card3 .header-subtext {
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+
+.card2 .header-text {
+  font-size: 24px;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.card2 .header-subtext {
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+
+.card .header-text {
+  font-size: 24px;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+.card .header-subtext {
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+.content-box {
+  overflow: auto;
+  text-align: center;
+  background: rgba(0, 128, 0, 1);
+  padding: 15px;
+  border-radius: 8px;
+  height: 100%;
+  margin-top: 10px;
+  padding-top: 20px;
+  padding-bottom: 70px;
+}
+
+.custom-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background: white;
+  color: green;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.custom-button:hover {
+  background: lightgreen;
+}
+
+
+</style>
+
+<style>
+/* Import Livvic font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Livvic:wght@400;700&display=swap');
+
+/* Reset Default Margins and Padding */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* General Body Styling */
+html, body {
+  font-family: 'Livvic', Arial, sans-serif;
+  background-color: #E8FFEA;
+  color: #333;
+  height: 100%;
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+/* Container for Content */
+.container {
+  width: 100%;
+  max-width: 400px; /* Limits width for readability */
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .container {
+      padding: 15px;
+  }
+
+  .button {
+      font-size: 14px;
+      padding: 8px;
+  }
+}
+
+/* Bottom Navigation Bar */
+.nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #E8FFEA;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0;
+  border-top: 2px solid #ddd;
+  box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  padding: 10px 0; /* Adjust padding as needed */
+  height: 60px; /* Set a fixed height */
+}
+
+/* Navigation Links on the bottom of the page.. */
+.nav-link {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  font-size: 10px;
+  color: #333;
+  text-decoration: none;
+  transition: 0.3s;
+  font-weight: bold;
+}
+
+.navSelect {
+  color: #2B7E2A;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.nav-link a {
+  height: 100%;
+}
+
+/* Hover & Active Effects */
+.nav-link:hover {
+  background: #f0f0f0;
+}
+
+.nav-link:active {
+  color: #007bff;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+  .nav-link {
+      font-size: 12px;
+      padding: 8px;
+  }
+}
+
+/* Full header part */
+.body-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: relative;
+  top: 0;
+  z-index: 990;
+  margin: 0;
+}
+
+/* header part */
+.header {
+  background-color: #000000;
+  padding: 13px;
+  width: 100%;
+  color: white;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 24px;
+  color: white;
+}
+
+/* profile header part */
+.profileheader {
+  display: flex;
+  flex-direction:row;
+  background-color: #2B7E2A;
+  padding: 13px;
+  width: 100%;
+  color: white;
+  height: 100px;
+  justify-content: center;
+}
+
+.main-content h3 {
+  margin-top: 10px;
+}
+
+.main-content h4 {
+  text-align: left; 
+  padding-left: 20px; 
+  margin-top: 10px;
+}
+
+.swiper-wrapper {
+  font-size: 12px;
+
+}
+
+.swiper-slide a {
+  text-decoration: none;
+  color: #333;
+
+}
+
+.profileheader a {
+  color: white;
+  font-weight: bold;
+}
+.profile-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 auto;
+  width: 100%;
+
+}
+
+.profileheader h1 {
+  margin: 0;
+  font-size: 24px;
+  color: white;
+}
+
+
+/* Meal plan part */
+.meal-plan {
+  background-color: #2B7E2A;
+  padding: 10px 0;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
+  width: 100%;
+  color: white;
+  margin: 0;
+}
+
+.calendar {
+  position: relative;
+  max-width: 100%;
+  margin: auto;
+}
+
+.current-day {
+  text-align: center;
+  padding: 20px;
+}
+
+.today-label {
+  font-size: 16px;
+  color: red;
+  margin-bottom: 5px;
+}
+
+.date-square {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  background-color: white;
+  color: #333;
+  border: 2px solid #333;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  border-radius: 10px;
+}
+
+img {
+  vertical-align: middle;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  padding: 16px;
+  margin-top: -22px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  user-select: none;
+}
+
+.prev {
+  left: 0;
+}
+
+.next {
+  right: 0;
+}
+
+/* Add a background color to the buttons on hover */
+.prev:hover, .next:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
+.main-content {
+  text-align: center;
+  padding-bottom: 60px; /* Ensure content is not hidden behind the nav-bar */
+}
+
+/* Swiper container */
+.swiper-container {
+  width: 100%;
+  overflow-x: scroll;
+  display: flex;
+  padding: 10px 0;
+}
+
+.swiper-wrapper {
+  display: flex;
+}
+
+.swiper-slide {
+  min-width: 150px;
+  margin-right: 10px;
+  text-align: center;
+}
+
+.swiper-slide img {
+  width: 100%;
+}
+
+/* recipes page */
+.recipe-main-content {
+  display: flex;
+  width: 100%;
+  border-bottom: 1px solid #333;
+  padding: 10px 0;
+}
+.recipe-main-content a {
+  width: 100%;
+  text-decoration: none;
+}
+.recipe-link {
+  display: flex;
+  flex-direction: row;
+}
+
+.recipe-link p, .recipe-link h3 {
+  color: #333;
+}
+
+.recipe-navbar a {
+  text-decoration: none;
+}
+
+/* Circular nav link */
+.circle-nav-link {
+  position: fixed;
+  bottom: 80px; /* Adjust based on the height of the nav-bar */
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background-color: #2B7E2A;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  z-index: 1001;
+  border: 1px solid white;
+}
+
+.circle-nav-link img {
+  width: 30px;
+  height: 30px;
+}
+
+/* Hover effect for circular nav link */
+.circle-nav-link:hover {
+  background-color: #256a24;
+}
+
+/* Back button on scanner*/
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: #2B7E2A;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.back-button:hover {
+  background-color: #256a24;
+}
+
+/* Scanner buttons */
+.scanner-button {
+  background-color: #2B7E2A;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  border: 2px solid white; /* Added white border */
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+
+.scanner-button:hover {
+  background-color: #256a24;
+}
+
+.camera-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.camera-container p {
+  margin-top: 40px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.textbox-input {
+  display: flex;
+  font-size: 14px;
+  flex-direction: row;
+  justify-content: center;
+  align-items: space-evenly;
+  position: fixed;
+  bottom: 70px;
+  width: 100%;
+}
+
+.input-button {
+  background-color: #2B7E2A;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  border: none;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.input-button:hover {
+  background-color: #256a24;
+}
+
+.scanned-content {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.scanned-image {
+  display: flex;
+
+}
+
+.scanned-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.ingredient-list-scanned {
+  border-top: 1px solid black;
+  width: 100%;
+}
+
+.ingredients-list-content {
+  display: flex;
+  width: 100%;
+  border-bottom: 1px solid #333;
+  padding: 10px 0;
+}
+
+.ingredient-link {
+  display: flex;
+  flex-direction: row;
+}
+.centering {
+  text-align: center;
+}
+</style>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/assets/styles.css">
+    <title>RecInScan</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-top: 90px; /* Ensure content starts below header */
+            padding-bottom: 90px; /* Ensure content doesn't overlap with nav bar */
+            background: url('static/assets/img/bg1.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .content-wrapper {
+        background: #E8FFEA; /* White semi-transparent background */
+        padding: 40px;
+        border-radius: 10px;
+        max-width: 1200px;
+        margin: auto;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #000000;
+            color: white;
+            padding: 13px;
+            border-radius: 0;
+            z-index: 1000;
+            padding-left: 60px; 
+        }
+        @media (max-width: 768px) {
+  .header {
+    padding-left: 10px; 
+  }
+}
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: white;
+        }
+
+        .about-content {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .about-text p,
+        .about-text ul {
+            margin: 10px 0;
+        }
+
+        .about-text ul li,
+        .sub-section ul li {
+            list-style: none;
+            padding: 0;
+        }
+
+        .about-image {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .about-image img {
+            width: 100%;
+            border-radius: 10px;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>About Us</h1>
+        <p>We would love to know about your opinion on RecInScan!</p>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="about-section">
+                <div class="about-text">
+                    <h2>Welcome to RecInScan – Your Smart Kitchen Companion!</h2>
+                    <p>
+                        <strong>RecInScan</strong> is designed to make cooking easier by identifying ingredients you have
+                        and suggesting delicious Kapampangan recipes. Reduce food waste, save time, and enjoy home-cooked
+                        meals with ease!
+                    </p>
+                    <h3>How It Works:</h3>
+                    <ul>
+                        <li>📸 Scan your ingredients</li>
+                        <li>🔍 Get real-time recipe suggestions</li>
+                        <li>🍽️ Enjoy authentic Kapampangan flavors</li>
+                    </ul>
+                </div>
+                <hr>
+            <div class="sub-section">
+                <h2>Why Choose RecInScan?</h2>
+                <p>
+                    Unlike manual-input apps like <em>SuperCook</em>, RecInScan automatically detects ingredients through advanced
+                    object detection, offering smart and personalized recipes instantly.
+                </p>
+                <h3>Key Features:</h3>
+                <ul>
+                    <li>⚡ Fast & accurate ingredient detection</li>
+                    <li>🍳 Customizable recipe suggestions</li>
+                    <li>🌍 Helps reduce food waste</li>
+                </ul>
+                <p>
+                    Developed by <strong>Floor Gang</strong>, our mission is to make Filipino cooking smarter and more accessible.
+                    Let RecInScan bring the flavors of Pampanga to your kitchen!
+                </p>
+            </div>
+        </div>
+    
+
+    </div>    
+
+    <div class="nav-bar">
+        <a class="nav-link" href = "{{ url_for('about') }}"><img src = "static/assets/icons/FeedbackPicked.png" height ="25px"><div class = "navSelect">About</div></a>
+        <a class="nav-link" href = "{{ url_for('chat') }}"><img src = "static/assets/icons/speech_bubble.png" height ="25px"><div>AI Chat</div></a>
+        <a class="nav-link" href = "{{ url_for('home') }}"><img src = "static/assets/icons/home.png" height ="25px"><div>Home</div></a>
+        <a class="nav-link" href = "{{ url_for('recipes') }}"><img src = "static/assets/icons/recipes.png" height ="25px"><div>Recipes</div></a>
+        <a class="nav-link" href = "{{ url_for('profile') }}"><img src = "static/assets/icons/profile.png" height ="25px"><div>Profile</div></a>
+    </div>
+</body>
+</html>

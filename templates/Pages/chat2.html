@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %} Dashboard {% endblock %}
+
+<!-- Element injected in the BODY element -->
+{% block body_class %} sidebar-mini {% endblock body_class %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<link rel="stylesheet" href="/static/assets/plugins/fontawesome-free/css/all.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/jqvmap/jqvmap.min.css">
+<link rel="stylesheet" href="/static/assets/css/adminlte.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+<link rel="stylesheet" href="/static/assets/plugins/daterangepicker/daterangepicker.css">
+<link rel="stylesheet" href="/static/assets/plugins/summernote/summernote-bs4.min.css">
+{% endblock stylesheets %}
+
+<script src="https://cdn.tailwindcss.com"></script>
+{% block content %}
+<style>
+    h1 { color: #333; }
+    textarea { width: 100%; height: 100px; }
+    button { padding: 10px; background: blue; color: white; border: none; cursor: pointer; }
+    .response { margin-top: 20px; padding: 10px; background: #f4f4f4; border-radius: 5px; }
+</style>
+<div class="content-wrapper" style="background-color: #D6EFD8;">
+    <h1>Ask Kapampangan AI</h1>
+    <form method="POST">
+        <textarea name="user_input" placeholder="Ask something about Kapampangan recipes..." required></textarea><br>
+        <button type="submit">Ask AI</button>
+    </form>
+
+    {% if response %}
+        <div class="response">
+            <h2>Response:</h2>
+            <p>{{ response }}</p>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE -->
+{% block javascripts %}
+<script>$.widget.bridge('uibutton', $.ui.button)</script>
+<script src="/static/assets/plugins/jquery/jquery.min.js"></script>
+<script src="/static/assets/plugins/jquery-ui/jquery-ui.min.js"></script>
+<script src="/static/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/static/assets/plugins/chart.js/Chart.min.js"></script>
+<script src="/static/assets/plugins/sparklines/sparkline.js"></script>
+<script src="/static/assets/plugins/jqvmap/jquery.vmap.min.js"></script>
+<script src="/static/assets/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+<script src="/static/assets/plugins/jquery-knob/jquery.knob.min.js"></script>
+<script src="/static/assets/plugins/moment/moment.min.js"></script>
+<script src="/static/assets/plugins/daterangepicker/daterangepicker.js"></script>
+<script src="/static/assets/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<script src="/static/assets/plugins/summernote/summernote-bs4.min.js"></script>
+<script src="/static/assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+<script src="/static/assets/js/adminlte.js"></script>
+<script src="/static/assets/js/pages/dashboard.js"></script>
+<script src="/static/assets/js/demo.js"></script>
+{% endblock javascripts %}
