@@ -120,7 +120,7 @@ body {
     background-color: #000000;
     padding: 13px;
     width: 100%;
-    padding-left: 60px; 
+    padding-left: 110px; 
     color: white;
 }
 @media (max-width: 768px) {
@@ -264,8 +264,12 @@ img {
 }
 
 .main-content {
+    display: flex;
     text-align: center;
-    padding-bottom: 60px; /* Ensure content is not hidden behind the nav-bar */
+    padding-bottom: 60px;
+    flex-direction: column;
+    width: 90%;
+    margin: auto;
 }
 
 /* Swiper container */
