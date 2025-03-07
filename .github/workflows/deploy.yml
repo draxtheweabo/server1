@@ -3,7 +3,7 @@ name: Deploy Flask App
 on:
   push:
     branches:
-      - main
+      - main  # Runs only when pushing to the main branch
 
 jobs:
   deploy:
@@ -33,4 +33,4 @@ jobs:
             source /home/tony/env/teton/bin/activate
             pip install --upgrade pip
             pip install --no-cache-dir -r requirements.txt
-            sudo systemctl restart peak  # No password needed
+            echo "yourpassword" | sudo -S systemctl restart peak
