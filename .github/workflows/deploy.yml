@@ -3,31 +3,34 @@ name: Deploy Flask App
 on:
   push:
     branches:
-      - main  # Change this if using another branch
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Repository
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set up SSH Key
+      - name: Setup SSH Key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan 147.93.107.147 >> ~/.ssh/known_hosts
+          ssh-keyscan -H 147.93.107.147 >> ~/.ssh/known_hosts
 
-      - name: Debug SSH Connection
-        run: ssh -vvv -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no tony@147.93.107.147 "echo 'SSH works!'"
-
-      - name: Deploy Application
-        run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no tony@147.93.107.147 << 'EOF'
-          cd /home/tony/hike
-          git pull origin main
-          source /home/tony/env/teton/bin/activate
-          pip install -r requirements.txt
-          sudo systemctl restart flask-app
-          EOF
+      - name: Deploy to Server
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: 147.93.107.147
+          username: tony
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /home/tony/hike
+            git pull origin main
+            source /home/tony/env/teton/bin/activate
+            pip install --upgrade pip
+            pip install --no-cache-dir -r requirements.txt
+            sudo systemctl restart peak  # No password needed
