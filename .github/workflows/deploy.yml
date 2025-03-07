@@ -3,7 +3,7 @@ name: Deploy Flask App
 on:
   push:
     branches:
-      - main  # Runs only when pushing to the main branch
+      - main
 
 jobs:
   deploy:
@@ -19,6 +19,9 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H 147.93.107.147 >> ~/.ssh/known_hosts
+
+      - name: Test SSH Connection
+        run: ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no tony@147.93.107.147 "echo SSH Connected Successfully"
 
       - name: Deploy to Server
         uses: appleboy/ssh-action@v0.1.4
