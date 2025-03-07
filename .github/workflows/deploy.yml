@@ -31,7 +31,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            cd /home/tony/hike
+            cd ~/hike/
             git pull origin main
             source /home/tony/env/teton/bin/activate
             pip install --upgrade pip
