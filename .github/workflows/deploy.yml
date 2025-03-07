@@ -36,4 +36,4 @@ jobs:
             source /home/tony/env/teton/bin/activate
             pip install --upgrade pip
             pip install --no-cache-dir -r requirements.txt
-            echo "Draxtheweabo021703@" | sudo -S systemctl restart peak
+            sudo systemctl restart peak
