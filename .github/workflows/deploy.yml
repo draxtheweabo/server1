@@ -19,7 +19,7 @@ jobs:
         script: |
           cd /home/tony/hike  # Updated path
           git pull origin main
-          source venv/bin/activate
+          source /home/tony/env/teton/bin
           pip install -r requirements.txt
           sudo systemctl restart flask-app
 
