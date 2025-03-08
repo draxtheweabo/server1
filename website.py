@@ -266,6 +266,10 @@ def add_dish():
             dish_name = request.form['dish_name']
             instructions = request.form['instructions']
             tag = request.form['tag']
+            author = request.form['author']
+            link = request.form['link']
+            serving = request.form['serving']
+            cook_time = request.form['cook_time']
 
             # ✅ Handle Image Upload
             image = request.files['image']
@@ -274,11 +278,14 @@ def add_dish():
             os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
             image.save(image_path)
 
-            # ✅ Insert Dish into Database
-            cursor.execute("INSERT INTO dishes (dish_name, instructions, tag, image_path) VALUES (%s, %s, %s, %s)", 
-                        (dish_name, instructions, tag, image_path))
+            # ✅ Insert Dish into Database (NOW WITH AUTHOR, LINK, SERVING, COOK TIME)
+            cursor.execute("""
+                INSERT INTO dishes (dish_name, instructions, tag, image_path, author, link, serving, cook_time) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, (dish_name, instructions, tag, image_path, author, link, serving, cook_time))
+            
             conn.commit()
-            dish_id = cursor.lastrowid  # Get the last inserted dish ID
+            dish_id = cursor.lastrowid  # Get last inserted dish ID
 
             # ✅ Insert Ingredients
             ingredient_names = request.form.getlist('ingredient_name[]')
@@ -293,8 +300,7 @@ def add_dish():
             cursor.close()
             conn.close()
             
-
-            return redirect(url_for('dashboard'))  # Redirect to homepage after adding
+            return redirect(url_for('dashboard'))  # Redirect after adding
 
         return render_template('Pages/add_dish.html')  # Load add dish form
     return redirect(url_for('admi_login'))
@@ -331,27 +337,49 @@ def edit(id):
 
         if request.method == 'POST':
             dish_name = request.form['dish_name']
+            author = request.form['author']
+            source_link = request.form['source_link']
+            serving_size = request.form['serving_size']
+            cook_time = request.form['cook_time']
             instructions = request.form['instructions']
             tag = request.form['tag']
             
             # Handle Image Upload
-            image_path = None
+            cursor.execute("SELECT image_path FROM dishes WHERE id=%s", (id))
+            result = cursor.fetchone()
+
+            if result:
+                old_image_path = result  # Get current image path
+            else:
+                old_image_path = "static/default.jpg"  # Fallback image
+
+            image_path = old_image_path  # Default to existing image
+
+            image_path = old_image_path  # Default to the existing image
             if 'image' in request.files:
                 image = request.files['image']
                 if image.filename:
-                    filename = secure_filename(image.filename)  # Sanitize the filename
+                    filename = secure_filename(image.filename)  # Sanitize filename
                     image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                    image.save(image_path)  # Save the uploaded file
+                    image.save(image_path)  # Save the new uploaded file
 
             # Update Dish Data
             update_query = """
-            UPDATE dishes SET dish_name=%s, instructions=%s, tag=%s 
+            UPDATE dishes 
+            SET dish_name=%s, author=%s, link=%s, serving=%s, cook_time=%s, instructions=%s, tag=%s, image_path=%s
             WHERE id=%s
             """
-            cursor.execute(update_query, (dish_name, instructions, tag, id))
-
-            if image_path:
-                cursor.execute("UPDATE dishes SET image_path=%s WHERE id=%s", (image_path, id))
+            cursor.execute(update_query, (
+                str(dish_name) if dish_name else None,  
+                str(author) if author else None,
+                str(source_link) if source_link else None,
+                str(serving_size) if serving_size else None,  
+                str(cook_time) if cook_time else None,  
+                str(instructions) if instructions else None,  
+                str(tag) if tag else None,
+                str(image_path) if image_path else None,
+                int(id) if str(id).isdigit() else 0  
+            ))
 
             # Delete Existing Ingredients
             cursor.execute("DELETE FROM recipe WHERE dish_id=%s", (id,))
@@ -360,9 +388,7 @@ def edit(id):
             ingredient_names = request.form.getlist('ingredient_name[]')
             ingredient_measurements = request.form.getlist('ingredient_measurement[]')
             ingredient_types = request.form.getlist('ingredient_type[]')
-            print("Ingredient Names:", ingredient_names)
-            print("Ingredient Measurements:", ingredient_measurements)
-            print("Ingredient Types:", ingredient_types)
+
             insert_query = "INSERT INTO recipe (dish_id, ingredient_name, measurement, category) VALUES (%s, %s, %s, %s)"
             for name, measurement, ing_type in zip(ingredient_names, ingredient_measurements, ingredient_types):
                 cursor.execute(insert_query, (id, name, measurement, ing_type))
@@ -385,6 +411,7 @@ def edit(id):
 
         return render_template('Pages/edit_dish.html', dish=dish, ingredients=ingredients)
     return redirect(url_for('admi_login'))
+
 @app.route('/admin', methods=['POST'])
 def admi_login():
     if request.method == 'POST':

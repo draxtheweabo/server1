@@ -20,27 +20,27 @@
         }
         h2 {
             color: #2d6a4f;
+            margin-bottom: 15px;
         }
-        .ingredient-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-            align-items: center;
-            justify-content: center;
+        .form-group {
+            margin-bottom: 15px;
         }
         input, textarea, select, button {
-            padding: 8px;
+            padding: 10px;
             border-radius: 5px;
             border: 1px solid #95d5b2;
             width: 100%;
+            font-size: 16px;
+        }
+        textarea {
+            resize: vertical;
         }
         button {
             background-color: #52b788;
             color: white;
-            padding: 10px;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
             margin-top: 10px;
         }
         button:hover {
@@ -48,35 +48,81 @@
         }
         .back-button {
             background-color: #6c757d;
-	    top: 20px;
-	    left: 20px;
-	    color: white;
-	    padding: 10px 15px;
-	    border-radius: 5px;
-	    text-decoration: none;
-	    font-weight: bold;
-	    width: 100%;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
         }
-        .back-button:hover {
-            background-color: #5a6268;
+        .ingredient-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+            justify-content: center;
+        }
+        .ingredient-row input, .ingredient-row select {
+            flex: 1;
+        }
+        .remove-btn {
+            background-color: #e63946;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 8px 12px;  /* Adjusted padding */
+            border-radius: 5px;
+            font-size: 14px;
+            height: 38px;  /* Matches input field height */
+            display: flex;
+            align-items: center;  /* Centers text */
+            justify-content: center;
+            width: auto;
+        }
+        .remove-btn:hover {
+            background-color: #c72c41;
         }
     </style>
 </head>
 <body>
     <div class="container">
-	    <a class="back-button" href="{{ url_for('dashboard') }}">← Back</a>
+        <a class="back-button" href="{{ url_for('dashboard') }}">← Back</a>
         <h2>Add New Dish</h2>
-        <form method="POST" enctype="multipart/form-data">
-            <input type="text" name="dish_name" placeholder="Dish Name" required>
-            <textarea name="instructions" placeholder="Cooking Instructions" style="height: 100px;"></textarea>
-            <input type="file" name="image" accept="image/*" required>
-            <select name="tag">
-                <option value="Meat">Meat</option>
-                <option value="Vegetable">Vegetable</option>
-                <option value="Others">Others</option>
-            </select>
+        <form method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+            
+            <div class="form-group">
+                <input type="text" name="dish_name" placeholder="Dish Name" required>
+            </div>
+            <div class="form-group">
+                <input type="text" name="author" placeholder="Author" required>
+            </div>
+            <div class="form-group">
+                <input type="text" name="serving" placeholder="Serving Size" min="1" required>
+            </div>
+            <div class="form-group">
+                <input type="text" name="cook_time" placeholder="Cook Time (e.g., 30 min)" required>
+            </div>
+            <div class="form-group">
+                <input type="url" name="link" placeholder="Recipe Link (optional)">
+            </div>
+            <div class="form-group">
+                <textarea name="instructions" placeholder="Cooking Instructions" style="height: 100px;" required></textarea>
+            </div>
+            <div class="form-group">
+                <input type="file" name="image" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <select name="tag">
+                    <option value="Meat">Meat</option>
+                    <option value="Vegetable">Vegetable</option>
+                    <option value="Others">Others</option>
+                </select>
+            </div>
+
             <h2>Ingredient List</h2>
             <div id="ingredients-container">
+                <!-- Default three ingredient rows -->
                 <div class="ingredient-row">
                     <input type="text" name="ingredient_name[]" placeholder="Ingredient Name" required>
                     <input type="text" name="ingredient_measurement[]" placeholder="Measurement" required>
@@ -85,9 +131,30 @@
                         <option value="secondary">Secondary</option>
                         <option value="common">Common</option>
                     </select>
-                    <button type="button" onclick="removeIngredient(this)">Remove</button>
+                    <button type="button" class="remove-btn" onclick="removeIngredient(this)">Remove</button>
+                </div>
+                <div class="ingredient-row">
+                    <input type="text" name="ingredient_name[]" placeholder="Ingredient Name" required>
+                    <input type="text" name="ingredient_measurement[]" placeholder="Measurement" required>
+                    <select name="ingredient_type[]">
+                        <option value="main">Main</option>
+                        <option value="secondary">Secondary</option>
+                        <option value="common">Common</option>
+                    </select>
+                    <button type="button" class="remove-btn" onclick="removeIngredient(this)">Remove</button>
+                </div>
+                <div class="ingredient-row">
+                    <input type="text" name="ingredient_name[]" placeholder="Ingredient Name" required>
+                    <input type="text" name="ingredient_measurement[]" placeholder="Measurement" required>
+                    <select name="ingredient_type[]">
+                        <option value="main">Main</option>
+                        <option value="secondary">Secondary</option>
+                        <option value="common">Common</option>
+                    </select>
+                    <button type="button" class="remove-btn" onclick="removeIngredient(this)">Remove</button>
                 </div>
             </div>
+
             <button type="button" onclick="addIngredient()">Add Ingredient</button>
             <button type="submit">Add Dish</button>
         </form>
@@ -106,12 +173,41 @@
                     <option value="secondary">Secondary</option>
                     <option value="common">Common</option>
                 </select>
-                <button type="button" onclick="removeIngredient(this)">Remove</button>
+                <button type="button" class="remove-btn" onclick="removeIngredient(this)">Remove</button>
             `;
             container.appendChild(newRow);
         }
+
         function removeIngredient(button) {
-            button.parentElement.remove();
+            const container = document.getElementById("ingredients-container");
+            if (container.children.length > 3) {
+                button.parentElement.remove();
+            } else {
+                alert("You must have at least 3 ingredients.");
+            }
+        }
+
+        function validateForm() {
+            const ingredientTypes = document.querySelectorAll("select[name='ingredient_type[]']");
+            let mainCount = 0, secondaryCount = 0, commonCount = 0;
+
+            ingredientTypes.forEach(select => {
+                if (select.value === "main") mainCount++;
+                if (select.value === "secondary") secondaryCount++;
+                if (select.value === "common") commonCount++;
+            });
+
+            if (ingredientTypes.length < 3) {
+                alert("You must have at least 3 ingredients.");
+                return false;
+            }
+
+            if (mainCount < 1 || secondaryCount < 1 || commonCount < 1) {
+                alert("You must include at least one Main, one Secondary, and one Common ingredient.");
+                return false;
+            }
+
+            return true;
         }
     </script>
 </body>

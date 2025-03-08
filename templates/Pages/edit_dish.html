@@ -19,28 +19,75 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
         }
         h2 {
             color: #2d6a4f;
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
         }
         input, textarea, select {
             width: 100%;
-            padding: 8px;
-            margin: 5px 0;
+            padding: 12px;
+            margin: 8px 0;
             border-radius: 5px;
             border: 1px solid #95d5b2;
+            font-size: 16px;
+            box-sizing: border-box;
         }
-        button {
-            background-color: #52b788;
-            color: white;
-            padding: 10px;
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        button, .btn-back {
+            display: block;
+            width: 100%;
+            padding: 12px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
             margin-top: 10px;
+            text-align: center;
         }
-        button:hover {
+        .btn-update {
+            background-color: #52b788;
+            color: white;
+            font-weight: bold;
+        }
+        .btn-update:hover {
             background-color: #40916c;
+        }
+        .btn-add {
+            background-color: #74c69d;
+            color: white;
+        }
+        .btn-add:hover {
+            background-color: #52b788;
+        }
+        .btn-remove {
+            background-color: #d62828;
+            color: white;
+            padding: 8px;
+            width: auto;
+            margin-left: 10px;
+        }
+        .btn-remove:hover {
+            background-color: #a71d1d;
+        }
+        .btn-back {
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            text-align: center;
+        }
+        .btn-back:hover {
+            background-color: #5a6268;
         }
         .ingredient-row {
             display: flex;
@@ -51,32 +98,42 @@
         img {
             border-radius: 5px;
             margin: 10px 0;
-        }
-        .back-button {
-             background-color: #6c757d;
-	     top: 20px;
-	     left: 20px;
-	     color: white;
-	     padding: 10px 15px;
-	     border-radius: 5px;
-	     text-decoration: none;
-	     font-weight: bold;
-	     width: 100%;
-        }
-        .back-button:hover {
-            background-color: #5a6268;
+            display: block;
+            max-width: 100%;
         }
     </style>
 </head>
 <body>
     <div class="container">
-	<a class="back-button" href="{{ url_for('dashboard') }}">← Back</a>
+        <a class="btn-back" href="{{ url_for('dashboard') }}">← Back</a>
         <h2>Edit Dish</h2>
+
         <form method="POST" enctype="multipart/form-data">
+            <label>Dish Name</label>
             <input type="text" name="dish_name" value="{{ dish.dish_name }}" required>
-            <textarea name="instructions"style="height: 100px;">{{ dish.instructions }}</textarea>
+
+            <label>Author</label>
+            <input type="text" name="author" value="{{ dish.author }}" required>
+
+            <label>Source Link</label>
+            <input type="url" name="source_link" value="{{ dish.link }}" placeholder="https://example.com" required>
+
+            <label>Serving Size</label>
+            <input type="text" name="serving_size" value="{{ dish.serving }}" required>
+
+            <label>Cook Time (minutes)</label>
+            <input type="text" name="cook_time" value="{{ dish.cook_time }}" required>
+
+            <label>Instructions</label>
+            <textarea name="instructions">{{ dish.instructions }}</textarea>
+
+            <label>Current Image</label>
             <img src="{{ url_for('static', filename=dish.image_path.split('static/')[-1]) }}" alt="Current Image" width="150">
+
+            <label>Upload New Image</label>
             <input type="file" name="image" accept="image/*">
+
+            <label>Category</label>
             <select name="tag">
                 <option value="Meat" {% if dish.tag == 'Meat' %}selected{% endif %}>Meat</option>
                 <option value="Vegetable" {% if dish.tag == 'Vegetable' %}selected{% endif %}>Vegetable</option>
@@ -94,13 +151,13 @@
                         <option value="secondary" {% if ingredient.category == 'secondary' %}selected{% endif %}>Secondary</option>
                         <option value="common" {% if ingredient.category == 'common' %}selected{% endif %}>Common</option>
                     </select>
-                    <button type="button" onclick="removeIngredient(this)">Remove</button>
+                    <button type="button" class="btn-remove" onclick="removeIngredient(this)">Remove</button>
                 </div>
                 {% endfor %}
             </div>
 
-            <button type="button" onclick="addIngredient()">Add Ingredient</button>
-            <button type="submit">Update</button>
+            <button type="button" class="btn-add" onclick="addIngredient()">Add Ingredient</button>
+            <button type="submit" class="btn-update">Update Dish</button>
         </form>
     </div>
 </body>
@@ -120,7 +177,7 @@
                 <option value="secondary">Secondary</option>
                 <option value="common">Common</option>
             </select>
-            <button type="button" onclick="removeIngredient(this)">Remove</button>
+            <button type="button" class="btn-remove" onclick="removeIngredient(this)">Remove</button>
         `;
 
         container.appendChild(newRow);
@@ -129,4 +186,4 @@
     function removeIngredient(button) {
         button.parentElement.remove();
     }
-</script>
+</script> 
