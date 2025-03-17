@@ -26,13 +26,13 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 import time
 def get_ai_response(user_input, retries=3, delay=5):
     """Handles API requests with retries."""
-    user_input = user_input+"limit it on 100 words only"
+    user_input = user_input+"limit it on 500 words less only"
     messages = [{"role": "user", "content": user_input}]
 
     for attempt in range(retries):
         try:
             completion = client.chat.completions.create(
-                model="deepseek-ai/DeepSeek-V3",
+                model="deepseek-ai/DeepSeek-R1",
                 messages=messages,
                 max_tokens=100
             )
