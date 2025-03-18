@@ -1121,7 +1121,7 @@ def resend_code():
     msg.body = f"Your new password reset code is: {reset_code}"
     mail.send(msg)
 
-    message="A new reset code has been sent to your email.", "success"
+    message="A new reset code has been sent to your email."
     return render_template('Pages/validatepass.html',message=message)
 
 
