@@ -12,7 +12,7 @@
             <a class="back-button" href="{{ url_for('scan') }}">← Back</a>
             <section class="section-left">
             <div class="card" style="background: url('/static/assets/img/bg2.jpg') center/cover no-repeat; padding-top: 25px;">
-              <div class="header-text" style="margin-left: 20px;">Scanned Ingredients.</div>
+              <div class="header-text" style="margin-left: 20px;">Scanned Ingredients</div>
               <div class="content-box">
                 <form id="uploadForm" method="post" enctype="multipart/form-data">
                   <input type="hidden" id="hiddenIngredients" name="ingredients">
@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="card2" style=" background: url('/static/assets/img/bg2.jpg') center/cover no-repeat; padding-top: 25px;">
-              <div class="header-text" style="margin-left: 20px;">Add Images.</div>
+              <div class="header-text" style="margin-left: 20px;">Add Image</div>
               <div class="content-box">
                 <div class="button-container">
                   <input type="file" name="file" id="inputfile" style="display:none;" onchange="fileSelected()">
@@ -59,7 +59,7 @@
             </section>
             <section class="section-right">
             <div class="card3" style=" background: url('/static/assets/img/bg2.jpg') center/cover no-repeat; padding-top: 25px;">
-              <div class="header-text" style="margin-left: 20px;">Images Scanned.</div>
+              <div class="header-text" style="margin-left: 20px;">Images</div>
               <div class="content-box" >
 
                   {% for image_path in scanned_image_paths %}
