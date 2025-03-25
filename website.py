@@ -1047,7 +1047,47 @@ def forgot_password():
 
     # Send email
     msg = Message('Password Reset Code', recipients=[email])
-    msg.body = f'Your password reset code is: {reset_code}'
+    msg.html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body style="font-family: Arial, sans-serif; background-color: #e8f5e9; padding: 20px; margin: 0;">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
+            <tr>
+                <td align="center">
+                    <!-- Email Container -->
+                    <table width="500" style="background-color: white; border-radius: 10px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); text-align: center; padding: 40px; overflow: hidden; position: relative;">
+                        
+                        <!-- Top Banner with Pattern -->
+                        <tr>
+                            <td style="background: linear-gradient(135deg, #2e7d32 0%, #66bb6a 100%); height: 80px; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                                <h2 style="margin: 0; font-size: 24px; color: white; padding-top: 20px;">Password Reset</h2>
+                            </td>
+                        </tr>
+
+                        <!-- Main Content -->
+                        <tr>
+                            <td style="padding: 20px; background-image: linear-gradient(45deg, rgba(46, 125, 50, 0.05) 25%, transparent 25%, transparent 50%, rgba(46, 125, 50, 0.05) 50%, rgba(46, 125, 50, 0.05) 75%, transparent 75%, transparent); background-size: 40px 40px;">
+                                <p style="margin: 10px 0; color: #4caf50;">You requested to reset your password. Use the following code:</p>
+                                
+                                <!-- Reset Code Box -->
+                                <div style="font-size: 26px; font-weight: bold; background: linear-gradient(135deg, #2e7d32 10%, #a5d6a7 90%); color: white; display: inline-block; padding: 10px 20px; border-radius: 8px; margin: 20px 0;">
+                                    {reset_code}
+                                </div>
+                                
+                                <p style="margin: 10px 0; color: #666;">If you did not request this, please ignore this email.</p>
+                                <p style="margin-top: 20px; font-size: 14px; color: #777;">© 2025 by Floor Gang</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>
+    """
     mail.send(msg)
 
     message="Reset code sent to your email."
