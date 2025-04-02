@@ -19,7 +19,7 @@ app.secret_key = 'supersecretkey'
 #Chatbot API
 client = InferenceClient(
     provider="together", 
-    api_key="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"  # Replace with your actual API key
+    api_key="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"  # Replace with your actual API key
 )
 UPLOAD_FOLDER = 'static/assets/img/Recipes/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
