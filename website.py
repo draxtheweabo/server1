@@ -19,14 +19,14 @@ app.secret_key = 'supersecretkey'
 #Chatbot API
 client = InferenceClient(
     provider="hf-inference", 
-    api_key="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"  # Replace with your actual API key
+    api_key="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"  # Replace with your actual API key
 )
 UPLOAD_FOLDER = 'static/assets/img/Recipes/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 import time
 def get_ai_response(user_input, retries=3, delay=5):
     """Handles API requests with retries."""
-    user_input = user_input+"limit it on 200 characters less only"
+    user_input = user_input+"your name is alya limit it only answer kapampangan related if its not kapampangan related just say im sorry but that is not kapampangan dishes related"
     messages = [{"role": "user", "content": user_input}]
 
     for attempt in range(retries):
@@ -34,7 +34,7 @@ def get_ai_response(user_input, retries=3, delay=5):
             completion = client.chat.completions.create(
                 model="mistralai/Mistral-7B-Instruct-v0.3",
                 messages=messages,
-                max_tokens=100
+                max_tokens=500
             )
             if completion and "choices" in completion and len(completion["choices"]) > 0:
                 # Extract only the content of the message
