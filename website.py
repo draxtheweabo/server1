@@ -24,29 +24,39 @@ client = InferenceClient(
 UPLOAD_FOLDER = 'static/assets/img/Recipes/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 import time
+import time
+
 def get_ai_response(user_input, retries=3, delay=5):
     """Handles API requests with retries."""
-    user_input = user_input+"limit it on 200 characters less only"
+    user_input = user_input + " limit it on 200 characters less only"
     messages = [{"role": "user", "content": user_input}]
 
     for attempt in range(retries):
         try:
+            print(f"Attempt {attempt + 1} sending request...")
             completion = client.chat.completions.create(
                 model="deepseek-ai/DeepSeek-V3",
                 messages=messages,
                 max_tokens=100
             )
-            if completion and "choices" in completion and len(completion["choices"]) > 0:
-                # Extract only the content of the message
-                return completion["choices"][0]["message"]["content"]
+            print("Raw API Response:", completion)  # Debugging line
+            
+            # Ensure completion structure is correct before extracting response
+            if completion and hasattr(completion, "choices") and completion.choices:
+                return completion.choices[0].message.content
+
             return "Error: No response from API"
         except Exception as e:
             error_message = str(e)
-            if "504" in error_message or "Gateway Time-out" in error_message:
+            print(f"Error occurred: {error_message}")  # Debugging error messages
+            
+            if "504" in error_message or "Gateway Time-out" in error_message or "429" in error_message:
                 time.sleep(delay)  # Wait before retrying
             else:
                 break  # Stop retrying if it's a different error
+
     return "Error: The AI server is currently unavailable. Please try again later."
+
 
 def fetch_ingredients():
     connection = get_db_connection()
