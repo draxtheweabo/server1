@@ -32,7 +32,7 @@ def get_ai_response(user_input, retries=3, delay=5):
     for attempt in range(retries):
         try:
             completion = client.chat.completions.create(
-                model="mistralai/Mistral-7B-Instruct-v0.3",
+                model="deepseek-ai/DeepSeek-V3-0324",
                 messages=messages,
                 max_tokens=100
             )
