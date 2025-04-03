@@ -18,8 +18,8 @@ app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 #Chatbot API
 client = InferenceClient(
-    provider="together", 
-    api_key="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"  # Replace with your actual API key
+    provider="hf-inference", 
+    api_key="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"  # Replace with your actual API key
 )
 UPLOAD_FOLDER = 'static/assets/img/Recipes/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -32,7 +32,7 @@ def get_ai_response(user_input, retries=3, delay=5):
     for attempt in range(retries):
         try:
             completion = client.chat.completions.create(
-                model="deepseek-ai/DeepSeek-V3",
+                model="mistralai/Mistral-7B-Instruct-v0.3",
                 messages=messages,
                 max_tokens=100
             )
