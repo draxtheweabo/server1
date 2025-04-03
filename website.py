@@ -19,7 +19,7 @@ app.secret_key = 'supersecretkey'
 #Chatbot API
 client = InferenceClient(
     provider="together", 
-    api_key="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"  # Replace with your actual API key
+    api_key="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"  # Replace with your actual API key
 )
 UPLOAD_FOLDER = 'static/assets/img/Recipes/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -32,7 +32,7 @@ def get_ai_response(user_input, retries=3, delay=5):
     for attempt in range(retries):
         try:
             completion = client.chat.completions.create(
-                model="deepseek-ai/DeepSeek-V3-0324",
+                model="deepseek-ai/DeepSeek-V3",
                 messages=messages,
                 max_tokens=100
             )
