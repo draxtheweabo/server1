@@ -18,45 +18,42 @@ app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 #Chatbot API
 client = InferenceClient(
-    provider="together", 
-    api_key="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"  # Replace with your actual API key
+    model="mistralai/Mistral-7B-Instruct",  # Replace with a valid chat model
+    token="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"  # Your actual HF token
 )
 UPLOAD_FOLDER = 'static/assets/img/Recipes/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 import time
-import time
-
 def get_ai_response(user_input, retries=3, delay=5):
-    """Handles API requests with retries."""
-    user_input = user_input + " limit it on 200 characters less only"
-    messages = [{"role": "user", "content": user_input}]
+    """Handles AI requests with retries using Hugging Face InferenceClient."""
+    user_input = user_input + " Limit it to 200 characters only."
 
     for attempt in range(retries):
         try:
             print(f"Attempt {attempt + 1} sending request...")
-            completion = client.chat.completions.create(
-                model="deepseek-ai/DeepSeek-V3",
-                messages=messages,
-                max_tokens=100
-            )
-            print("Raw API Response:", completion)  # Debugging line
-            
-            # Ensure completion structure is correct before extracting response
-            if completion and hasattr(completion, "choices") and completion.choices:
-                return completion.choices[0].message.content
 
-            return "Error: No response from API"
+            # Use Hugging Face text generation
+            response = client.text_generation(user_input, max_new_tokens=100)
+
+            print("Raw API Response:", response)  # Debugging output
+
+            if response:
+                return response.strip()  # Clean up the response text
+
+            return "Error: No valid response from API."
+
         except Exception as e:
             error_message = str(e)
-            print(f"Error occurred: {error_message}")  # Debugging error messages
-            
-            if "504" in error_message or "Gateway Time-out" in error_message or "429" in error_message:
-                time.sleep(delay)  # Wait before retrying
+            print(f"Error occurred: {error_message}")  # Debugging output
+
+            # Retry only for transient errors
+            if any(code in error_message for code in ["504", "Gateway Time-out", "429", "Rate limit"]):
+                print("Retrying after delay...")
+                time.sleep(delay)
             else:
                 break  # Stop retrying if it's a different error
 
     return "Error: The AI server is currently unavailable. Please try again later."
-
 
 def fetch_ingredients():
     connection = get_db_connection()
