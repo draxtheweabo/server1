@@ -17,28 +17,24 @@ from huggingface_hub import InferenceClient
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 #Chatbot API
-client = InferenceClient(
-    provider="together", 
-    api_key="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"  # Replace with your actual API key
-)
+client = Together(api_key="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")  
 UPLOAD_FOLDER = 'static/assets/img/Recipes/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 import time
 def get_ai_response(user_input, retries=3, delay=5):
     """Handles API requests with retries."""
-    user_input = user_input+"limit it on 200 characters less only"
+    user_input = user_input + " Limit it to 200 characters or less."
     messages = [{"role": "user", "content": user_input}]
 
     for attempt in range(retries):
         try:
             completion = client.chat.completions.create(
-                model="meta-llama/Llama-2-7b-chat-hf",
+                model="deepseek-ai/DeepSeek-V3-0324",
                 messages=messages, 
                 max_tokens=100
             )
-            if completion and "choices" in completion and len(completion["choices"]) > 0:
-                # Extract only the content of the message
-                return completion["choices"][0]["message"]["content"]
+            if completion and hasattr(completion, "choices") and completion.choices:
+                return completion.choices[0].message.content  # Extract AI response
             return "Error: No response from API"
         except Exception as e:
             error_message = str(e)
