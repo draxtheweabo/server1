@@ -705,7 +705,7 @@ def chat():
         categoriesed = fetch_ingredients()
         print(preference)
         print(session['user'])
-        user_input="lets role play can you introduce ur self as a kapampangan ai Dish Recommender and limit your response only to kapampangan related topics but talks in english and if the topic is not kapampangan just say im sorry i only response to kapampangan topic"
+        user_input="a very very short 20 words introduction lets role play can you introduce ur self as a kapampangan ai Dish Recommender and limit your response only to kapampangan related topics but talks in english and if the topic is not kapampangan just say im sorry i only response to kapampangan topic"
         response_text = get_ai_response(user_input)
         return render_template('Pages/chat.html',response=response_text,current_user=session['user'],preference=preference,categories=categoriesed)
     else:
