@@ -26,7 +26,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 import time
 def get_ai_response(user_input, retries=3, delay=5):
     """Handles API requests with retries."""
-    user_input = user_input+"your name is alya limit it only answer kapampangan related if its not kapampangan related just say im sorry but that is not kapampangan dishes related"
+    user_input = user_input+"your name is alya limit it only answer 50 words kapampangan related if its not kapampangan related just say im sorry but that is not kapampangan dishes related"
     messages = [{"role": "user", "content": user_input}]
 
     for attempt in range(retries):
@@ -34,7 +34,7 @@ def get_ai_response(user_input, retries=3, delay=5):
             completion = client.chat.completions.create(
                 model="mistralai/Mistral-7B-Instruct-v0.3",
                 messages=messages,
-                max_tokens=500
+                max_tokens=100
             )
             if completion and "choices" in completion and len(completion["choices"]) > 0:
                 # Extract only the content of the message
