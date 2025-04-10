@@ -837,6 +837,7 @@ def scan_ingredients():
             result.save(filename=result_path)
             scan_paths.append(result_path)  # Add this scan's path to the list
         
+        
         img = cv2.imread(os.path.normpath(result_path))
         for result in detections:
             boxes = result.boxes  # Bounding boxes object
