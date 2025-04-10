@@ -34,7 +34,7 @@ def get_ai_response(user_input, retries=3, delay=5):
             completion = client.chat.completions.create(
                 model="mistralai/Mistral-7B-Instruct-v0.3",
                 messages=messages,
-                max_tokens=100
+                max_tokens=50
             )
             if completion and "choices" in completion and len(completion["choices"]) > 0:
                 # Extract only the content of the message
